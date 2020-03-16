@@ -1,0 +1,68 @@
+﻿@model CompraVenta.ViewModels.RegisterViewModel
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <div class="wrapper-main">
+        <!-- Register -->
+        <div class="contact-main">
+            <div class="container">
+                <!-- Content Row -->
+                <div class="row">
+                    <!-- Map Column -->
+                    <div class="col-lg-8 mb-4 contact-left">
+                        <h3>Nueva Cuenta</h3>
+                        <form method="post" name="sentMessage" id="contactForm">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="text" asp-for="UserName" placeholder="Nombre de Usuario" class="form-control" id="name" required data-validation-required-message="Introduzca su nombre de usuario.">
+                                    <span asp-validation-for="UserName" class="text-danger"></span>
+                                    <p class="help-block"></p>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="tel" asp-for="PhoneNumber" placeholder="Número de Teléfono" class="form-control" id="phone" required data-validation-required-message="Especifique el número de teléfono.">
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="email" asp-for="Email" placeholder="Dirección de Correo" class="form-control" id="email" required data-validation-required-message="Especifique una dirección de correo.">
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <textarea rows="2" cols="100" asp-for="Details" placeholder="Información" class="form-control" id="message" maxlength="999" style="resize:none"></textarea>
+                                </div>
+                            </div>
+                            <h3>Contraseña de la cuenta</h3>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="password" asp-for="Password" placeholder="Contraseña" class="form-control" id="password" required data-validation-required-message="Especifique una contraseña.">
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="password" asp-for="Confirmation" placeholder="Confirmar Contraseña" class="form-control" id="password" required data-validation-required-message="Reescriba la contraseña definida.">
+                                    <span asp-validation-for="Confirmation" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div id="success"></div>
+                            <!-- For success/fail messages -->
+                            <button type="submit" class="btn btn-primary" id="sendMessageButton">Registrar</button>
+                            <h3 class="my-4">Ya tienes una cuenta?</h3>
+                            <a asp-action="Login" asp-controller="Account" class="btn btn-primary">Entrar</a>
+                        </form>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container -->
+        </div>
+    </div>
+</body>

@@ -1,0 +1,41 @@
+﻿@model CompraVenta.ViewModels.LoginViewModel
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <!-- Login -->
+    <div class="contact-main">
+        <div class="container">
+            <!-- Content Row -->
+            <div class="row">
+                <!-- Map Column -->
+                <div class="col-lg-8 mb-4 contact-left">
+                    <h3> Entrar </h3>
+                    <form method="post" name="sentMessage" id="contactForm">
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <input type="text" asp-for="UserName" placeholder="Nombre de Usuario" class="form-control" id="username" required data-validation-required-message="Escriba un nombre de usuario.">
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <input type="password" asp-for="Password" placeholder="Contraseña" class="form-control" id="password" required data-validation-required-message="Escriba una contraseña.">
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div id="success"></div>
+                        <!-- For success/fail messages -->
+                        <button type="submit" class="btn btn-primary" id="sendMessageButton">Entrar</button>
+                        <h3 class="my-4">Nuevo miembro?</h3>
+                        <a asp-action="Register" asp-controller="Account" class="btn btn-primary">Registrar</a>
+                    </form>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </div>    
+</body>

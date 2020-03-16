@@ -1,0 +1,61 @@
+﻿@model CompraVenta.ViewModels.AnnounceViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <div class="wrapper-main">
+        <!-- full Title -->
+        <div class="full-title">
+            <div class="container">
+                <!-- Page Heading/Breadcrumbs -->
+                <h1 class="mt-4 mb-3"> Anunciar </h1>
+                <div class="breadcrumb-main">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-main">
+            <div class="container">
+                <!-- Content Row -->
+                <div class="row">
+                    <!-- Map Column -->
+                    <div class="col-lg-8 mb-4 contact-left">
+                        <h3> Rellene el formulario </h3>
+                        <form method="post" name="sentMessage" id="contactForm" novalidate>
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input asp-for="Title" type="text" placeholder="Título del anuncio" class="form-control" id="title" required data-validation-required-message="Entre el título del artículo.">
+                                    <p class="help-block"></p>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input asp-for="Name" type="text" placeholder="Nombre del artículo" class="form-control" id="name" required data-validation-required-message="Entre el nombre del artículo.">
+                                    <p class="help-block"></p>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input asp-for="Price" type="number" placeholder="Precio del Artículo" class="form-control" id="price" required data-validation-required-message="Especifique el precio del artículo.">
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <textarea asp-for="Description" rows="10" cols="100" placeholder="Detalles" class="form-control" id="message" maxlength="999" style="resize:none"></textarea>
+                                </div>
+                            </div>
+                            <div id="success"></div>
+                            <!-- For success/fail messages -->
+                            <button type="submit" class="btn btn-primary" id="sendMessageButton">Publicar</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container -->
+        </div>
+    </div>
