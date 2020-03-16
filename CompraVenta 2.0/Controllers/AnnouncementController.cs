@@ -33,6 +33,7 @@ namespace CompraVenta.Controllers
                     Description = article.Description,
                     Price = article.Price
                 };
+                obj.SellerId = context.Users.FirstOrDefault(e => e.UserName.Equals(obj.SellerUserName)).Id;
                 model.Add(obj);
             }
             return View(model);

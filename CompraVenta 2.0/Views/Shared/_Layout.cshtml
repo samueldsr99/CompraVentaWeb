@@ -55,7 +55,7 @@
                         <li class="nav-item dropdown">
                             <a class="btn btn-dark" href="#" id="navbarDropdownBlog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@User.Identity.Name<i class="fas fa-sort-down"></i></a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownBlog">
-                                <a class="dropdown-item" href="#">Perfil</a>
+                                <a class="dropdown-item" asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@User.Identity.Name">Perfil</a>
                                 <form method="post">
                                     <button type="submit" class="dropdown-item" asp-action="Logout" asp-controller="Account">Salir</button>
                                 </form>

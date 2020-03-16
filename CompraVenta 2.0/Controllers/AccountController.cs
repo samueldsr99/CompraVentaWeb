@@ -39,6 +39,7 @@ namespace CompraVenta.Controllers
                     UserName = model.UserName,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
+                    Description = model.Details,
                 };
                 var result = await userManager.CreateAsync(user, model.Password);
 
@@ -82,19 +83,11 @@ namespace CompraVenta.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
-
-        public async Task<IActionResult> AccountDetails(int? id)
+        
+        public IActionResult AccountDetails(string userName)
         {
-            var account = context.Users.FirstOrDefault(e => e.Id.Equals(id));
-            var identity = await userManager.FindByIdAsync(account.Id);
-            var model = new AccountViewModel
-            {
-                UserName = identity.UserName,
-                Email = identity.Email,
-                PhoneNumber = identity.PhoneNumber,
-                Description = account.Description
-            };
-            return View(model);
+            var account = userManager.Users.FirstOrDefault(e => e.UserName.Equals(userName));
+            return View(account);
         }
     }
 }

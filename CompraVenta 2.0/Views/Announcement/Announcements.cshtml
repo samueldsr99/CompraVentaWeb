@@ -31,7 +31,7 @@
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="by-post">
-                                    Publicado el @announce.Date por <a asp-action="AccountDetails" asp-controller="Account" asp-route-id="@announce.SellerUserName">@announce.SellerUserName</a>.
+                                    Publicado el @announce.Date por <a asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@announce.SellerUserName">@announce.SellerUserName</a>.
                                 </div>
                                 <h2 class="card-title">@announce.Title</h2>
                                 @{

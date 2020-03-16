@@ -12,6 +12,7 @@ namespace CompraVenta.ViewModels
         public int Id { get; set; }
         [Required]
         public string Title { get; set; }
+        public string SellerId { get; set; }
         public string SellerUserName { get; set; }
         public DateTime Date { get; set; }
         [Required]
