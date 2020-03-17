@@ -14,4 +14,10 @@
     <None Include="Views\Account\Register.cshtml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Account\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
 </Project>

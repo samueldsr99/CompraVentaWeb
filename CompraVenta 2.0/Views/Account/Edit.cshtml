@@ -1,0 +1,78 @@
+﻿@using CompraVenta.ViewModels;
+@model EditAccountViewModel
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <div class="wrapper-main">
+        <!-- Register -->
+        <div class="contact-main">
+            <div class="container">
+                <!-- Content Row -->
+                <div class="row">
+                    <!-- Map Column -->
+                    <div class="col-lg-8 mb-4 contact-left">
+                        <h3>Editar Cuenta</h3>
+                        <form method="post" name="sentMessage" id="contactForm">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="tel" asp-for="UserName" value="@Model.UserName" class="form-control" disabled>
+                                    <span asp-validation-for="UserName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="tel" asp-for="Name" value="@Model.Name" placeholder="Nombre Completo" class="form-control">
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="tel" asp-for="PhoneNumber" placeholder="Número de Teléfono" class="form-control" value="@Model.PhoneNumber" id="phone" required data-validation-required-message="Especifique el número de teléfono.">
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="email" asp-for="Email" placeholder="Dirección de Correo" value="@Model.Email" class="form-control" id="email" required data-validation-required-message="Especifique una dirección de correo.">
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <textarea rows="2" cols="100" asp-for="Details" value="@Model.Details" placeholder="Información" class="form-control" id="message" maxlength="999" style="resize:none"></textarea>
+                                </div>
+                            </div>
+                            <h3>Cambiar contraseña (opcional)</h3>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="password" asp-for="OldPassword" placeholder="Contraseña Actual" class="form-control" id="password">
+                                    <span asp-validation-for="OldPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="password" asp-for="NewPassword" placeholder="Nueva Contraseña" class="form-control" id="password">
+                                    <span asp-validation-for="NewPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <input type="password" asp-for="Confirmation" placeholder="Confirmar Nueva Contraseña" class="form-control" id="password">
+                                    <span asp-validation-for="Confirmation" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div id="success"></div>
+                            <!-- For success/fail messages -->
+                            <button type="submit" class="btn btn-primary" id="sendMessageButton">Editar</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container -->
+        </div>
+    </div>
+</body>

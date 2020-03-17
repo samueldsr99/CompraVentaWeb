@@ -37,6 +37,7 @@ namespace CompraVenta.Controllers
                 var user = new Account
                 {
                     UserName = model.UserName,
+                    Name = model.Name,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     Description = model.Details,
@@ -88,6 +89,65 @@ namespace CompraVenta.Controllers
         {
             var account = userManager.Users.FirstOrDefault(e => e.UserName.Equals(userName));
             return View(account);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Edit(string userName)
+        {
+            var account = await userManager.FindByNameAsync(userName);
+            var model = new EditAccountViewModel
+            {
+                UserName = account.UserName,
+                Name = account.Name,
+                Email = account.Email,
+                Details = account.Description,
+                PhoneNumber = account.PhoneNumber,
+            };
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditAccountViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var account = await userManager.FindByNameAsync(model.UserName);
+
+                account.Email = model.Email;
+                account.Name = model.Name;
+                account.PhoneNumber = model.PhoneNumber;
+                account.Description = model.Details;
+
+                var result = await userManager.UpdateAsync(account);
+
+                if (result.Succeeded)
+                {
+                    if (model.NewPassword != null
+                    || model.OldPassword != null
+                    || model.Confirmation != null)
+                    {
+                        var change_result = await userManager.ChangePasswordAsync(account, model.OldPassword, model.NewPassword);
+                        if (change_result.Succeeded)
+                        {
+                            return View(model);
+                        }
+                        else
+                        {
+                            foreach (var error in change_result.Errors)
+                            {
+                                ModelState.AddModelError("", error.Description);
+                            }
+                            return View(model);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+            }
+            return View(model);
         }
     }
 }

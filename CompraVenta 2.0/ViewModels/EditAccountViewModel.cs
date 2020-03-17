@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CompraVenta.ViewModels
 {
-    public class RegisterViewModel
+    public class EditAccountViewModel
     {
         [Required]
         [DataType(DataType.Text)]
@@ -20,17 +20,19 @@ namespace CompraVenta.ViewModels
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
-
         [DataType(DataType.Text)]
         public string Details { get; set; }
 
         [DataType(DataType.Password)]
+        public string OldPassword { get; set; }
+
+        [DataType(DataType.Password)]
+        public string NewPassword { get; set; }
+
+        [DataType(DataType.Password)]
         [Display(Name = "Confirmar contraseña")]
-        [Compare("Password",
-                ErrorMessage ="La contraseña y la confirmación no coinciden.")]
+        [Compare("NewPassword",
+                ErrorMessage = "La contraseña y la confirmación no coinciden.")]
         public string Confirmation { get; set; }
     }
 }
