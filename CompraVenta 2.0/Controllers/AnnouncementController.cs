@@ -15,28 +15,36 @@ namespace CompraVenta.Controllers
         {
             this.context = context;
         }
-        public IActionResult Announcements()
+        public IActionResult Announcements(AnnouncementsViewModel model)
         {
-            List<AnnounceViewModel> model = new List<AnnounceViewModel>();
-            foreach (var announce in context.Announcements)
-            {
-                var article = context.Articles.FirstOrDefault(e => e.Id.Equals(announce.ArticleId));
+            List<AnnounceViewModel> announcements = toAnnounceViewModel(context.Announcements);
 
-                var obj = new AnnounceViewModel
+            return View(new AnnouncementsViewModel
+            {
+                Announcements = announcements,
+                Page = model.Page,
+                SearchText = model.SearchText
+            });
+        }
+
+        [HttpPost]
+        public IActionResult Search(AnnouncementsViewModel model)
+        {
+            if (model.SearchText == null || model.SearchText.Length == 0)
+            {
+                return View("Announcements", new AnnouncementsViewModel
                 {
-                    Id = announce.Id,
-                    Title = announce.Title,
-                    Date = announce.Date,
-                    Name = article.Name,
-                    SellerUserName = article.SellerUserName,
-                    Category = article.Category,
-                    Description = article.Description,
-                    Price = article.Price
-                };
-                obj.SellerId = context.Users.FirstOrDefault(e => e.UserName.Equals(obj.SellerUserName)).Id;
-                model.Add(obj);
+                    Announcements = toAnnounceViewModel(context.Announcements),
+                    Page = 1,
+                    SearchText = ""
+                });
             }
-            return View(model);
+            return View("Announcements", new AnnouncementsViewModel
+            {
+                Announcements = SearchAnnouncements(context.Announcements, model.SearchText),
+                Page = 1,
+                SearchText = ""
+            });
         }
 
         [HttpGet]
@@ -66,7 +74,12 @@ namespace CompraVenta.Controllers
                 };
                 context.Announcements.Add(announcement);
                 context.SaveChanges();
-                return RedirectToAction("Announcements", "Announcement");
+                return View("Announcements", new AnnouncementsViewModel
+                {
+                    Announcements = toAnnounceViewModel(context.Announcements),
+                    Page = 1,
+                    SearchText = ""
+                });
             }
             return View(model);
         }
@@ -87,6 +100,73 @@ namespace CompraVenta.Controllers
                 Price = article.Price
             };
             return View(obj);
+        }
+
+        /**************************< Utility Functions >****************************************/
+
+        public List<AnnounceViewModel> toAnnounceViewModel(IEnumerable<Announcement> list)
+        {
+            List<AnnounceViewModel> ret = new List<AnnounceViewModel>();
+            foreach (var announce in list)
+            {
+                var article = context.Articles.FirstOrDefault(e => e.Id.Equals(announce.ArticleId));
+
+                var obj = new AnnounceViewModel
+                {
+                    Id = announce.Id,
+                    Title = announce.Title,
+                    Date = announce.Date,
+                    Name = article.Name,
+                    SellerUserName = article.SellerUserName,
+                    Category = article.Category,
+                    Description = article.Description,
+                    Price = article.Price
+                };
+                obj.SellerId = context.Users.FirstOrDefault(e => e.UserName.Equals(obj.SellerUserName)).Id;
+                ret.Add(obj);
+            }
+            return ret;
+        }
+
+        public List<AnnounceViewModel> FilterBy(ArticleCategory category)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Announcement> SortBy()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<AnnounceViewModel> SearchAnnouncements(IEnumerable<Announcement> Announcements, string text)
+        {
+            List<AnnounceViewModel> ret = new List<AnnounceViewModel>();
+            foreach (var announcement in Announcements)
+            {
+                var article = context.Articles.FirstOrDefault(e => e.Id.Equals(announcement.ArticleId));
+                var view_model = new AnnounceViewModel
+                {
+                    Id = announcement.Id,
+                    Date = announcement.Date,
+                    Title = announcement.Title,
+                    SellerUserName = article.SellerUserName,
+                    Name = article.Name,
+                    Category = article.Category,
+                    Description = article.Description,
+                    Price = article.Price
+                };
+                bool ok = false;
+                ok |= (view_model.Title != null && view_model.Title.Contains(text, StringComparison.CurrentCultureIgnoreCase));
+                ok |= (view_model.SellerUserName != null && view_model.SellerUserName.Contains(text, StringComparison.CurrentCultureIgnoreCase));
+                ok |= (view_model.Name != null && view_model.Name.Contains(text, StringComparison.CurrentCultureIgnoreCase));
+                ok |= (view_model.Description != null && view_model.Description.Contains(text, StringComparison.CurrentCultureIgnoreCase));
+
+                if (ok)
+                {
+                    ret.Add(view_model);
+                }
+            }
+            return ret;
         }
     }
 }

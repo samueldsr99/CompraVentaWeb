@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using CompraVenta.ViewModels;
 @inject SignInManager<Account> SignInManager
-@model List<AnnounceViewModel>
+@model AnnouncementsViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -25,8 +25,21 @@
             <div class="row">
                 <!-- Blog Entries Column -->
                 <div class="col-md-8 blog-entries">
-                    @foreach (var announce in Model)
+                    @{ 
+                        int it = 0;
+                    }
+                    @foreach (var announce in Model.Announcements)
                     {
+                        if (it < Model.FirstAnnounceOnPage())
+                        {
+                            it++;
+                            continue;
+                        }
+                        else if (it > Model.LastAnnounceOnPage())
+                        {
+                            break;
+                        }
+                        it++;
                         <!-- Blog Post -->
                         <div class="card mb-4">
                             <div class="card-body">
@@ -58,10 +71,28 @@
                         <!-- Pagination -->
                         <ul class="pagination justify-content-center mb-4">
                             <li class="page-item">
-                                <a class="page-link" href="#">&larr; Older</a>
+                                @{ 
+                                    int prev = Model.Page - 1;
+                                    int next = Model.Page + 1;
+                                }
+                                @if (Model.Page == 1)
+                                {
+                                    <a class="page-link disabled">&larr; Older</a>
+                                }
+                                else
+                                {
+                                    <a class="page-link" asp-action="Announcements" asp-controller="Announcement" asp-route-Page="@prev">&larr; Older</a>
+                                }
                             </li>
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#">Newer &rarr;</a>
+                            <li class="page-item">
+                                @if (Model.IsLastPage())
+                                {
+                                    <a class="page-link disabled">Newer &rarr;</a>
+                                }
+                                else
+                                {
+                                    <a class="page-link" asp-action="Announcements" asp-controller="Announcement" asp-route-page="@next">Newer &rarr;</a>
+                                }
                             </li>
                         </ul>
                     </div>
@@ -69,17 +100,17 @@
                 <!-- Sidebar Widgets Column -->
                 <div class="col-md-4 blog-right-side">
                     <!-- Search Widget -->
-                    <div class="card mb-4">
-                        <h5 class="card-header">Buscar</h5>
+                    <form method="post" asp-action="Search" asp-controller="Announcement" class="card mb-4">
+                        <h5 class="card-header">Buscar:</h5>
                         <div class="card-body">
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Texto...">
+                                <input type="text" asp-for="SearchText" class="form-control" placeholder="Texto...">
                                 <span class="input-group-btn">
-                                    <button class="btn btn-secondary" type="button">Go</button>
+                                    <button class="btn btn-secondary" type="submit">Go</button>
                                 </span>
                             </div>
                         </div>
-                    </div>
+                    </form>
                     <!-- Side Widget -->
                     @if (SignInManager.IsSignedIn(User))
                     {
@@ -92,32 +123,26 @@
                     }
                     <!-- Categories Widget -->
                     <div class="card my-4">
-                        <h5 class="card-header">Filtrar por</h5>
+                        <h5 class="card-header">Filtrar por:</h5>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <ul class="list-unstyled mb-0">
                                         <li>
-                                            <a href="#">Web Design</a>
+                                            <a href="#">Hogar</a>
                                         </li>
                                         <li>
-                                            <a href="#">HTML</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Freebies</a>
+                                            <a href="#">Vivienda</a>
                                         </li>
                                     </ul>
                                 </div>
                                 <div class="col-lg-6">
                                     <ul class="list-unstyled mb-0">
                                         <li>
-                                            <a href="#">JavaScript</a>
+                                            <a href="#">Autos</a>
                                         </li>
                                         <li>
-                                            <a href="#">CSS</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Tutorials</a>
+                                            <a href="#">Electrónico</a>
                                         </li>
                                     </ul>
                                 </div>

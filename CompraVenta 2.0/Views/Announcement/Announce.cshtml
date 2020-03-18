@@ -32,6 +32,15 @@
                                     <p class="help-block"></p>
                                 </div>
                             </div>
+
+                            <select class="control-group form-group browser-default custom-select">
+                                <option selected disabled>Categoría</option>
+                                <option asp-for="Category" value="Hogar">Hogar</option>
+                                <option asp-for="Category" value="Electronico">Electrónico</option>
+                                <option asp-for="Category" value="Vivienda">Vivienda</option>
+                                <option asp-for="Category" value="Autos">Autos</option>
+                            </select>
+
                             <div class="control-group form-group">
                                 <div class="controls">
                                     <input asp-for="Name" type="text" placeholder="Nombre del artículo" class="form-control" id="name" required data-validation-required-message="Entre el nombre del artículo.">
