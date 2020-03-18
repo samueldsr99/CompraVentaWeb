@@ -10,7 +10,8 @@ namespace CompraVenta.Models
         Hogar,
         Electronico,
         Vivienda,
-        Autos
+        Autos,
+        Undefined
     };
 
     public class Article

@@ -122,33 +122,35 @@
                         </div>
                     }
                     <!-- Categories Widget -->
-                    <div class="card my-4">
-                        <h5 class="card-header">Filtrar por:</h5>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <ul class="list-unstyled mb-0">
-                                        <li>
-                                            <a href="#">Hogar</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Vivienda</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-lg-6">
-                                    <ul class="list-unstyled mb-0">
-                                        <li>
-                                            <a href="#">Autos</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Electrónico</a>
-                                        </li>
-                                    </ul>
+                    <form method="post" asp-action="Filter" asp-controller="Announcement">
+                        <div class="card my-4">
+                            <h5 class="card-header">Filtrar por:</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li>
+                                                <button class="btn btn-dark" asp-action="Filter" type="submit" asp-route-category="Hogar">Hogar</button>
+                                            </li>
+                                            <li>
+                                                <button class="btn btn-dark" asp-action="Filter" type="submit" asp-route-category="Vivienda">Vivienda</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li>
+                                                <button class="btn btn-dark" asp-action="Filter" type="submit" asp-route-category="Autos">Autos</button>
+                                            </li>
+                                            <li>
+                                                <button class="btn btn-dark" asp-action="Filter" type="submit" asp-route-category="Electronico">Electrónico</button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
             <!-- /.row -->

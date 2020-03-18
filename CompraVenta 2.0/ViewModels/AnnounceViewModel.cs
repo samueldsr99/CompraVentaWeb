@@ -18,10 +18,28 @@ namespace CompraVenta.ViewModels
         [Required]
         public string Name { get; set; }
         [Required]
-        public ArticleCategory Category { get; set; }
+        public string Category { get; set; }
         [Required]
         [DataType(DataType.Duration)]
         public double Price { get; set; }
         public string Description { get; set; }
+
+        public ArticleCategory getCategory() => AnnounceViewModel.getCategory(Category);
+        public static ArticleCategory getCategory(string s)
+        {
+            switch (s)
+            {
+                case "Hogar":
+                    return ArticleCategory.Hogar;
+                case "Autos":
+                    return ArticleCategory.Autos;
+                case "Vivienda":
+                    return ArticleCategory.Vivienda;
+                case "Electronico":
+                    return ArticleCategory.Electronico;
+                default:
+                    return ArticleCategory.Undefined;
+            }
+        }
     }
 }

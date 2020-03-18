@@ -25,6 +25,7 @@
                 <div class="col-lg-8">
                     <!-- Title -->
                     <h1 class="text-center">@Model.Title</h1>
+                    <h3 class="text-left text-secondary">Categoría: @Model.Category.</h3>
                     <h5 class="text-center">por <a asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@Model.SellerUserName">@Model.SellerUserName</a></h5>
                     <!-- Preview Image Not implemented yet! -->
                     <img class="img-fluid rounded" src="~/images/blog-item-01.jpg" alt="" />
@@ -32,8 +33,9 @@
                     <!-- Date/Time -->
                     <p class="text-black-50">Publicado el @Model.Date</p>
                     <hr>
+                    <h3 class="text-left">Precio: $@Model.Price</h3>
                     <!-- Post Content -->
-                    <h2 class="text-center">Detalles</h2>
+                    <h2 class="text-center">Detalles:</h2>
                     <h4 class="my-4 text-black-50 text-center">
                         @{
                             int p = 0;

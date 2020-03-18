@@ -47,6 +47,17 @@ namespace CompraVenta.Controllers
             });
         }
 
+        [HttpPost]
+        public IActionResult Filter(string category)
+        {
+            return View("Announcements", new AnnouncementsViewModel
+            {
+                Announcements = FilterBy(toAnnounceViewModel(context.Announcements), AnnounceViewModel.getCategory(category)),
+                Page = 1,
+                SearchText = ""
+            });
+        }
+
         [HttpGet]
         public IActionResult Announce() => View();
 
@@ -59,7 +70,7 @@ namespace CompraVenta.Controllers
                 var article = new Article
                 {
                     Name = model.Name,
-                    Category = model.Category,
+                    Category = model.getCategory(),
                     Price = model.Price,
                     Description = model.Description,
                     SellerUserName = User.Identity.Name
@@ -95,7 +106,7 @@ namespace CompraVenta.Controllers
                 Date = announcement.Date,
                 Name = article.Name,
                 SellerUserName = article.SellerUserName,
-                Category = article.Category,
+                Category = article.Category.ToString(),
                 Description = article.Description,
                 Price = article.Price
             };
@@ -118,7 +129,7 @@ namespace CompraVenta.Controllers
                     Date = announce.Date,
                     Name = article.Name,
                     SellerUserName = article.SellerUserName,
-                    Category = article.Category,
+                    Category = article.Category.ToString(),
                     Description = article.Description,
                     Price = article.Price
                 };
@@ -128,9 +139,10 @@ namespace CompraVenta.Controllers
             return ret;
         }
 
-        public List<AnnounceViewModel> FilterBy(ArticleCategory category)
+        public IEnumerable<AnnounceViewModel> FilterBy(IEnumerable<AnnounceViewModel> announcements, ArticleCategory category)
         {
-            throw new NotImplementedException();
+            var ret = announcements.Where(e => e.getCategory().Equals(category));
+            return ret;
         }
 
         public List<Announcement> SortBy()
@@ -138,10 +150,10 @@ namespace CompraVenta.Controllers
             throw new NotImplementedException();
         }
 
-        public IEnumerable<AnnounceViewModel> SearchAnnouncements(IEnumerable<Announcement> Announcements, string text)
+        public IEnumerable<AnnounceViewModel> SearchAnnouncements(IEnumerable<Announcement> announcements, string text)
         {
             List<AnnounceViewModel> ret = new List<AnnounceViewModel>();
-            foreach (var announcement in Announcements)
+            foreach (var announcement in announcements)
             {
                 var article = context.Articles.FirstOrDefault(e => e.Id.Equals(announcement.ArticleId));
                 var view_model = new AnnounceViewModel
@@ -151,7 +163,7 @@ namespace CompraVenta.Controllers
                     Title = announcement.Title,
                     SellerUserName = article.SellerUserName,
                     Name = article.Name,
-                    Category = article.Category,
+                    Category = article.Category.ToString(),
                     Description = article.Description,
                     Price = article.Price
                 };
