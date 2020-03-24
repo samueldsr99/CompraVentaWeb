@@ -15,5 +15,6 @@ namespace CompraVenta.Models
         public DbSet<Account> Users { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<Announcement> Announcements { get; set; }
+        public DbSet<Auction> Auctions { get; set; }
     }
 }

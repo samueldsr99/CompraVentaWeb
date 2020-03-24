@@ -1,0 +1,143 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using CompraVenta.ViewModels;
+@model AuctionsViewModel
+@inject SignInManager<Account> SignInManager
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="wrapper-main">
+    <!-- full Title -->
+    <div class="full-title">
+        <div class="container">
+            <!-- Page Heading/Breadcrumbs -->
+            <h1 class="mt-4 mb-3">Subastas</h1>
+            <div class="breadcrumb-main">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="blog-main">
+        <div class="container">
+            <div class="row">
+                <!-- Blog Entries Column -->
+                <div class="col-md-8 blog-entries">
+                    @foreach (var auction in Model.Auctions)
+                    {
+                        <!-- Blog Post -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="by-post">
+                                    <!-- Not Yet -->
+                                </div>
+                                <h2 class="card-title">@auction.Title</h2>
+                                @{
+                                    string Summary = auction.Details;
+                                    if (auction.Details.Length > 150)
+                                    {
+                                        Summary = auction.Details.Substring(0, 150) + "...";
+                                    }
+                                }
+
+                                <p class="card-text">@Summary</p>
+                                @if (auction.Begin.CompareTo(DateTime.Now) == 1)
+                                {
+                                    <h5 class="card-title">Precio de Salida: $@auction.StartPrice.</h5>
+                                    TimeSpan r = auction.Begin.Subtract(DateTime.Now);
+                                    <a asp-action="Details" asp-controller="Auction" asp-route-id="@auction.Id" class="btn btn-warning">
+                                        No ha comenzado &rarr;
+                                    </a>
+                                    <h6 class="my-3">Comienza en: @r.Days día(s), @r.Hours hora(s), @r.Minutes minuto(s) </h6>
+                                }
+                                else if (auction.End.CompareTo(DateTime.Now) == -1)
+                                {
+                                    <h5 class="card-title">Precio de cierre: $@auction.CurrentPrice.</h5>
+                                    <a asp-action="Details" asp-controller="Auction" asp-route-id="@auction.Id" class="btn btn-info">
+                                        Ya terminó &rarr;
+                                    </a>
+                                    <h6 class="my-3">Fecha de cierre: @auction.End </h6>
+                                }
+                                else
+                                {
+                                    TimeSpan r = auction.End.Subtract(DateTime.Now);
+                                    <h5 class="card-title">Precio actual: $@auction.CurrentPrice.</h5>
+                                    <a asp-action="Details" asp-controller="Auction" asp-route-id="@auction.Id" class="btn btn-success">
+                                        En curso &rarr;
+                                    </a>
+                                    <h6 class="my-3">Tiempo restante: @r.Days día(s), @r.Hours hora(s), @r.Minutes minuto(s)</h6>
+                                }
+                                @if (SignInManager.IsSignedIn(User) && User.Identity.Name.Equals(auction.CurrentOwner))
+                                {
+                                    <h5 class="far fa-check-circle" style="color: rgb(85, 216, 48)"><b> Lo tienes :)</b></h5>
+                                }
+
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Sidebar Widgets Column -->
+                <div class="col-md-4 blog-right-side">
+                    <!-- Search Widget -->
+                    <form method="post" class="card mb-4">
+                        <h5 class="card-header">Buscar:</h5>
+                        <div class="card-body">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Texto...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-secondary" type="submit">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Side Widget -->
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <div class="card my-auto">
+                            <h5 class="card-header">
+                                Hacer una subasta
+                                <a class="pull-right btn btn-secondary">Subastar</a>
+                            </h5>
+                        </div>
+                    }
+                    <!-- Categories Widget -->
+                    <form method="post" asp-action="Filter" asp-controller="Announcement">
+                        <div class="card my-4">
+                            <h5 class="card-header">Filtrar por:</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li>
+                                                <button class="btn btn-dark" asp-action="Filter" type="submit" asp-route-category="Hogar">Hogar</button>
+                                            </li>
+                                            <li>
+                                                <button class="btn btn-dark" asp-action="Filter" type="submit" asp-route-category="Vivienda">Vivienda</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li>
+                                                <button class="btn btn-dark" asp-action="Filter" type="submit" asp-route-category="Autos">Autos</button>
+                                            </li>
+                                            <li>
+                                                <button class="btn btn-dark" asp-action="Filter" type="submit" asp-route-category="Electronico">Electrónico</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </div>
+</div>
+

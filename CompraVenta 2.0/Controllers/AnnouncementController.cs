@@ -17,7 +17,7 @@ namespace CompraVenta.Controllers
         }
         public IActionResult Announcements(AnnouncementsViewModel model)
         {
-            List<AnnounceViewModel> announcements = toAnnounceViewModel(context.Announcements);
+            List<AnnounceViewModel> announcements = ToAnnounceViewModel(context.Announcements);
 
             return View(new AnnouncementsViewModel
             {
@@ -34,7 +34,7 @@ namespace CompraVenta.Controllers
             {
                 return View("Announcements", new AnnouncementsViewModel
                 {
-                    Announcements = toAnnounceViewModel(context.Announcements),
+                    Announcements = ToAnnounceViewModel(context.Announcements),
                     Page = 1,
                     SearchText = ""
                 });
@@ -52,7 +52,7 @@ namespace CompraVenta.Controllers
         {
             return View("Announcements", new AnnouncementsViewModel
             {
-                Announcements = FilterBy(toAnnounceViewModel(context.Announcements), AnnounceViewModel.getCategory(category)),
+                Announcements = FilterBy(ToAnnounceViewModel(context.Announcements), AnnounceViewModel.getCategory(category)),
                 Page = 1,
                 SearchText = ""
             });
@@ -87,7 +87,7 @@ namespace CompraVenta.Controllers
                 context.SaveChanges();
                 return View("Announcements", new AnnouncementsViewModel
                 {
-                    Announcements = toAnnounceViewModel(context.Announcements),
+                    Announcements = ToAnnounceViewModel(context.Announcements),
                     Page = 1,
                     SearchText = ""
                 });
@@ -115,7 +115,7 @@ namespace CompraVenta.Controllers
 
         /**************************< Utility Functions >****************************************/
 
-        public List<AnnounceViewModel> toAnnounceViewModel(IEnumerable<Announcement> list)
+        public List<AnnounceViewModel> ToAnnounceViewModel(IEnumerable<Announcement> list)
         {
             List<AnnounceViewModel> ret = new List<AnnounceViewModel>();
             foreach (var announce in list)

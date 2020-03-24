@@ -1,4 +1,6 @@
 ﻿@model Account
+@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<Account> SignInManager
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -46,7 +48,7 @@
                             </h5>
                         </div>
                     </div>
-                    @if (User.Identity.Name.Equals(Model.UserName))
+                    @if (SignInManager.IsSignedIn(User) && User.Identity.Name.Equals(Model.UserName))
                     {
                         <div class="blog-right-side">
                             <div class="my-4">

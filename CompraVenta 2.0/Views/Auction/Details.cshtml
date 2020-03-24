@@ -1,0 +1,145 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using CompraVenta.ViewModels;
+@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<Account> SignInManager
+@model AuctionViewModel
+<div class="wrapper-main">
+    <!-- full Title -->
+    <div class="full-title">
+        <div class="container">
+            <!-- Page Heading/Breadcrumbs -->
+            <h1 class="mt-4 mb-3"> Subasta </h1>
+            <div class="breadcrumb-main">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    @{ 
+        //1: no ha comenzado, 2: en curso, 3: termino
+        int state = 2;
+        TimeSpan r = Model.End.Subtract(DateTime.Now);
+        if (Model.End.CompareTo(DateTime.Now) == -1)
+        {
+            state = 3;
+        }
+        else if (Model.Begin.CompareTo(DateTime.Now) == 1)
+        {
+            state = 1;
+            r = Model.Begin.Subtract(DateTime.Now);
+        }
+    }
+
+    <div class="blog-main">
+        <div class="container">
+            <div class="row">
+                <!-- Post Content Column -->
+                <div class="col-lg-8">
+                    <!-- Title -->
+                    <h1 class="text-center">@Model.AName</h1>
+                    <h3 class="text-left text-secondary">Categoría: @Model.ACategory.</h3>
+                    <h5 class="text-center">por <a asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@Model.SellerUserName">@Model.SellerUserName</a></h5>
+                    <!-- Preview Image Not implemented yet! -->
+                    <img class="img-fluid rounded" src="~/images/blog-item-01.jpg" alt="" />
+                    <hr>
+                    <!-- Date/Time -->
+                    <p class="text-black-50">Fecha de inicio: @Model.Begin</p>
+                    <p class="text-black-50">Fecha de fin: @Model.End</p>
+                    @if (state == 1)
+                    {
+                        <h5 class="text-left text-right">Comienza en: @r.Days día(s) @r.Hours hora(s) @r.Minutes minuto(s). </h5>
+                    }
+                    else if (state == 2)
+                    {
+                        <h5 class="text-left text-right">Tiempo restante: @r.Days día(s) @r.Hours hora(s) @r.Minutes minuto(s). </h5>
+                    }
+                    <hr>
+                    <h6 class="text-left">Precio de Salida: $@Model.StartPrice.</h6>
+                    @if (state == 3)
+                    {
+                        <h6 class="text-left">Precio de Cierre: $@Model.CurrentPrice.</h6>
+                        <h6 class="text-left">Ganador: @Model.CurrentOwner.</h6>
+                    }
+                    @if (state == 2)
+                    {
+                        <h3 class="text-left">Precio Actual: $@Model.CurrentPrice</h3>
+                        <h3 class="text-left">Ganador Actual: @Model.CurrentOwner</h3>
+                    }
+                    <!-- Post Content -->
+                    <h2 class="text-center">Detalles:</h2>
+                    <h4 class="my-4 text-black-50 text-center">
+                        @{
+                            int p = 0;
+                            while (p < Model.Details.Length)
+                            {
+                                @Model.Details.Substring(p, Math.Min(80, Model.Details.Length - p))
+                                p += 80;
+                                <br />
+                            }
+                        }
+                    </h4>
+                    @if (SignInManager.IsSignedIn(User) && state == 2)
+                    {
+                        <form class="my-4" method="post" asp-action="Details" asp-controller="Auction">
+                            <input type="number" asp-for="BidAmount" />
+                            <button class="btn btn-primary right">Pujar</button>
+                        </form>
+                    }
+                    <div class="blog-right-side">
+                        <!-- Comments Form -->
+                        <div class="card my-4">
+                            <h5 class="card-header">Leave a Comment:</h5>
+                            <div class="card-body">
+                                <form>
+                                    <div class="form-group">
+                                        <textarea class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Single Comment -->
+                    <div class="media mb-4">
+                        <img class="d-flex mr-3 rounded-circle" src="images/testi_01.png" alt="">
+                        <div class="media-body">
+                            <h5 class="mt-0">Commenter Name</h5>
+                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                        </div>
+                    </div>
+
+                    <!-- Comment with nested comments -->
+                    <div class="media mb-4">
+                        <img class="d-flex mr-3 rounded-circle" src="images/testi_02.png" alt="">
+                        <div class="media-body">
+                            <h5 class="mt-0">Commenter Name</h5>
+                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                            <div class="media mt-4">
+                                <img class="d-flex mr-3 rounded-circle" src="images/testi_01.png" alt="">
+                                <div class="media-body">
+                                    <h5 class="mt-0">Commenter Name</h5>
+                                    Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Single Comment -->
+                    <div class="media mb-4">
+                        <img class="d-flex mr-3 rounded-circle" src="images/testi_03.png" alt="">
+                        <div class="media-body">
+                            <h5 class="mt-0">Commenter Name</h5>
+                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </div>
+</div>

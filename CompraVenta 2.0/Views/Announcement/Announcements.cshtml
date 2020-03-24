@@ -112,19 +112,11 @@
                         </div>
                     </form>
                     <!-- Side Widget -->
-                    @if (SignInManager.IsSignedIn(User))
-                    {
-                        <div class="card my-auto">
-                            <h5 class="card-header">
-                                Anuncie su artículos:
-                                <a class="pull-right btn btn-secondary" asp-action="Announce" asp-controller="Announcement">Anunciar</a>
-                            </h5>
-                        </div>
-                    }
+                    
                     <!-- Categories Widget -->
                     <form method="post" asp-action="Filter" asp-controller="Announcement">
                         <div class="card my-4">
-                            <h5 class="card-header">Filtrar por:</h5>
+                            <h5 class="card-header">Categorías:</h5>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-lg-6">
@@ -146,6 +138,24 @@
                                                 <button class="btn btn-dark" asp-action="Filter" type="submit" asp-route-category="Electronico">Electrónico</button>
                                             </li>
                                         </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card my-4">
+                            <h5 class="card-header">Rango de Precios:</h5>
+                            <div class="card-body">
+                                <div class="row my-2">
+                                    <h3 class="col-lg-4">Max:</h3>
+                                    <div class="col-lg-8">
+                                        <input class="form-control" type="number" />
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <h3 class="col-lg-4">Min:</h3>
+                                    <div class="col-lg-8">
+                                        <input class="form-control" type="number" />
                                     </div>
                                 </div>
                             </div>
