@@ -52,6 +52,7 @@ namespace CompraVenta.Controllers
             }
             return View(model);
         }
+        [HttpGet]
         public IActionResult Auctions()
         {
             List<AuctionViewModel> auctions = ToAuctionViewModel(context.Auctions);
@@ -60,6 +61,26 @@ namespace CompraVenta.Controllers
                 Auctions = auctions,
                 Page = 1,
                 SearchText = ""
+            });
+        }
+        [HttpPost]
+        public IActionResult Filter(AuctionsViewModel model)
+        {
+            var list = ToAuctionViewModel(context.Auctions);
+            var filter = list.AsEnumerable();
+            if (AnnounceViewModel.getCategory(model.ACategory) != ArticleCategory.All)
+                filter = FilterByCategory(list, AnnounceViewModel.getCategory(model.ACategory));
+            if (model.SearchText != null && model.SearchText != "")
+                filter = FilterByText(filter, model.SearchText);
+            filter = FilterByPrice(filter, model.MinPrice, model.MaxPrice);
+            if (model.State != "All")
+                filter = FilterByState(filter, model.State);
+            return View("Auctions", new AuctionsViewModel
+            {
+                Auctions = filter,
+                MinPrice = model.MinPrice,
+                MaxPrice = model.MaxPrice,
+                SearchText = model.SearchText,
             });
         }
         [HttpGet]
@@ -125,6 +146,42 @@ namespace CompraVenta.Controllers
                 });
             }
             return ret;
+        }
+
+        public IEnumerable<AuctionViewModel> FilterByCategory(IEnumerable<AuctionViewModel> auctions, ArticleCategory category)
+        {
+            var ret = auctions.Where(e => e.getCategory() == category);
+            return ret;
+        }
+        public IEnumerable<AuctionViewModel> FilterByText(IEnumerable<AuctionViewModel> auctions, string SearchText)
+        {
+            return auctions.Where(e =>
+                e.Details.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
+                e.ACategory.ToString().Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
+                e.AName.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
+                e.SellerUserName.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
+                e.Title.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
+            );
+        }
+        public IEnumerable<AuctionViewModel> FilterByPrice(IEnumerable<AuctionViewModel> auctions, double MinPrice, double MaxPrice)
+        {
+            return auctions.Where(e =>
+                e.CurrentPrice >= MinPrice && e.CurrentPrice <= MaxPrice
+            );
+        }
+
+        public IEnumerable<AuctionViewModel> FilterByState(IEnumerable<AuctionViewModel> auctions, string State)
+        {
+            if (State == "All") return auctions;
+
+            return auctions.Where(e =>
+            {
+                string state = "Running";
+                TimeSpan r = e.End.Subtract(DateTime.Now);
+                if (e.Begin.CompareTo(DateTime.Now) == 1) state = "Coming";
+                else if (e.End.CompareTo(DateTime.Now) == -1) state = "Closed";
+                return state == State;
+            });
         }
     }
 }

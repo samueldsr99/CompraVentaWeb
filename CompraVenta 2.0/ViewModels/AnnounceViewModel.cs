@@ -37,6 +37,8 @@ namespace CompraVenta.ViewModels
                     return ArticleCategory.Vivienda;
                 case "Electronico":
                     return ArticleCategory.Electronico;
+                case "All":
+                    return ArticleCategory.All;
                 default:
                     return ArticleCategory.Undefined;
             }

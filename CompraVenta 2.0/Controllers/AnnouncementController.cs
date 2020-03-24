@@ -15,6 +15,7 @@ namespace CompraVenta.Controllers
         {
             this.context = context;
         }
+        [HttpGet]
         public IActionResult Announcements(AnnouncementsViewModel model)
         {
             List<AnnounceViewModel> announcements = ToAnnounceViewModel(context.Announcements);
@@ -26,35 +27,23 @@ namespace CompraVenta.Controllers
                 SearchText = model.SearchText
             });
         }
-
         [HttpPost]
-        public IActionResult Search(AnnouncementsViewModel model)
+        public IActionResult Filter(AnnouncementsViewModel model)
         {
-            if (model.SearchText == null || model.SearchText.Length == 0)
-            {
-                return View("Announcements", new AnnouncementsViewModel
-                {
-                    Announcements = ToAnnounceViewModel(context.Announcements),
-                    Page = 1,
-                    SearchText = ""
-                });
-            }
+            var list = ToAnnounceViewModel(context.Announcements);
+            var filter = list.AsEnumerable();
+            if (AnnounceViewModel.getCategory(model.Category) != ArticleCategory.All)
+                filter = FilterByCategory(list, AnnounceViewModel.getCategory(model.Category));
+            if (model.SearchText != null && model.SearchText != "")
+                filter = FilterByText(filter, model.SearchText);
+            filter = FilterByPrice(filter, model.MinPrice, model.MaxPrice);
             return View("Announcements", new AnnouncementsViewModel
             {
-                Announcements = SearchAnnouncements(context.Announcements, model.SearchText),
-                Page = 1,
-                SearchText = ""
-            });
-        }
-
-        [HttpPost]
-        public IActionResult Filter(string category)
-        {
-            return View("Announcements", new AnnouncementsViewModel
-            {
-                Announcements = FilterBy(ToAnnounceViewModel(context.Announcements), AnnounceViewModel.getCategory(category)),
-                Page = 1,
-                SearchText = ""
+                Announcements = filter,
+                SearchText = model.SearchText,
+                MinPrice = model.MinPrice,
+                MaxPrice = model.MaxPrice,
+                Category = model.Category
             });
         }
 
@@ -139,46 +128,31 @@ namespace CompraVenta.Controllers
             return ret;
         }
 
-        public IEnumerable<AnnounceViewModel> FilterBy(IEnumerable<AnnounceViewModel> announcements, ArticleCategory category)
+        public IEnumerable<AnnounceViewModel> FilterByCategory(IEnumerable<AnnounceViewModel> announcements, ArticleCategory category)
         {
-            var ret = announcements.Where(e => e.getCategory().Equals(category));
+            var ret = announcements.Where(e => e.getCategory() == category);
             return ret;
+        }
+        public IEnumerable<AnnounceViewModel> FilterByText(IEnumerable<AnnounceViewModel> announcements, string SearchText)
+        {
+            return announcements.Where(e => 
+                e.Description.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
+                e.Category.ToString().Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
+                e.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
+                e.SellerUserName.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
+                e.Title.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
+            );
+        }
+        public IEnumerable<AnnounceViewModel> FilterByPrice(IEnumerable<AnnounceViewModel> announcements, double MinPrice, double MaxPrice)
+        {
+            return announcements.Where(e => 
+                e.Price >= MinPrice && e.Price <= MaxPrice
+            );
         }
 
         public List<Announcement> SortBy()
         {
             throw new NotImplementedException();
-        }
-
-        public IEnumerable<AnnounceViewModel> SearchAnnouncements(IEnumerable<Announcement> announcements, string text)
-        {
-            List<AnnounceViewModel> ret = new List<AnnounceViewModel>();
-            foreach (var announcement in announcements)
-            {
-                var article = context.Articles.FirstOrDefault(e => e.Id.Equals(announcement.ArticleId));
-                var view_model = new AnnounceViewModel
-                {
-                    Id = announcement.Id,
-                    Date = announcement.Date,
-                    Title = announcement.Title,
-                    SellerUserName = article.SellerUserName,
-                    Name = article.Name,
-                    Category = article.Category.ToString(),
-                    Description = article.Description,
-                    Price = article.Price
-                };
-                bool ok = false;
-                ok |= (view_model.Title != null && view_model.Title.Contains(text, StringComparison.CurrentCultureIgnoreCase));
-                ok |= (view_model.SellerUserName != null && view_model.SellerUserName.Contains(text, StringComparison.CurrentCultureIgnoreCase));
-                ok |= (view_model.Name != null && view_model.Name.Contains(text, StringComparison.CurrentCultureIgnoreCase));
-                ok |= (view_model.Description != null && view_model.Description.Contains(text, StringComparison.CurrentCultureIgnoreCase));
-
-                if (ok)
-                {
-                    ret.Add(view_model);
-                }
-            }
-            return ret;
         }
     }
 }

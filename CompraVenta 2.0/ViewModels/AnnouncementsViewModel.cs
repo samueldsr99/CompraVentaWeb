@@ -8,8 +8,20 @@ namespace CompraVenta.ViewModels
 {
     public class AnnouncementsViewModel
     {
+        public AnnouncementsViewModel()
+        {
+            MinPrice = double.MinValue;
+            MaxPrice = double.MaxValue;
+            Category = "All";
+            SearchText = "";
+        }
         public IEnumerable<AnnounceViewModel> Announcements { get; set; }
         public string SearchText{ get; set; }
+        public string Category { get; set; }
+        public double MinPrice { get; set; }
+        public double MaxPrice { get; set; }
+
+        // Unused for now
         public int Page { get; set; }
         public bool IsLastPage()
         {
