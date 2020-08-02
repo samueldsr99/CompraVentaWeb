@@ -1,6 +1,6 @@
 # Proyecto de Ingeniería de Software
 
-## ToDO
+## TODO
     - Trabajar en la vista Contáctanos.
     - El perfil de usuario sigue siendo un poco básico al no tener algunas opciones como *olvidaste la contraseña?*.
     - Refinar las vistas para quitar los detalles innecesarios de los templates.

@@ -1,4 +1,6 @@
 ﻿@using CompraVenta.ViewModels;
+@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<Account> SignInManager
 @model AnnounceViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -28,7 +30,7 @@
                     <h3 class="text-left text-secondary">Categoría: @Model.Category.</h3>
                     <h5 class="text-center">por <a asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@Model.SellerUserName">@Model.SellerUserName</a></h5>
                     <!-- Preview Image Not implemented yet! -->
-                    <img class="img-fluid rounded" src="~/images/blog-item-01.jpg" alt="" />
+                    <img class="img-fluid rounded" src="~/images/laptop.bmp" alt="" />
                     <hr>
                     <!-- Date/Time -->
                     <p class="text-black-50">Publicado el @Model.Date</p>
@@ -48,52 +50,40 @@
                         }
                     </h4>
 
-                    <div class="blog-right-side">
-                        <!-- Comments Form -->
-                        <div class="card my-4">
-                            <h5 class="card-header">Leave a Comment:</h5>
-                            <div class="card-body">
-                                <form>
-                                    <div class="form-group">
-                                        <textarea class="form-control" rows="3"></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Single Comment -->
-                    <div class="media mb-4">
-                        <img class="d-flex mr-3 rounded-circle" src="images/testi_01.png" alt="">
-                        <div class="media-body">
-                            <h5 class="mt-0">Commenter Name</h5>
-                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                        </div>
-                    </div>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <button class="btn btn-primary">Comprar</button>
 
-                    <!-- Comment with nested comments -->
-                    <div class="media mb-4">
-                        <img class="d-flex mr-3 rounded-circle" src="images/testi_02.png" alt="">
-                        <div class="media-body">
-                            <h5 class="mt-0">Commenter Name</h5>
-                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                            <div class="media mt-4">
-                                <img class="d-flex mr-3 rounded-circle" src="images/testi_01.png" alt="">
-                                <div class="media-body">
-                                    <h5 class="mt-0">Commenter Name</h5>
-                                    Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                        <div class="blog-right-side">
+                            <!-- Comments Form -->
+                            <div class="card my-4">
+                                <h5 class="card-header">Leave a Comment:</h5>
+                                <div class="card-body">
+                                    <form method="post">
+                                        <div asp-validation-summary="All" class="text-danger"></div>
+                                        <div class="form-group">
+                                            <textarea asp-for="CommentFormDescription" class="form-control" rows="3"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Single Comment -->
-                    <div class="media mb-4">
-                        <img class="d-flex mr-3 rounded-circle" src="images/testi_03.png" alt="">
-                        <div class="media-body">
-                            <h5 class="mt-0">Commenter Name</h5>
-                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                    }
+
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <div class="media mb-4">
+                            <img class="d-flex mr-3 rounded-circle" src="images/testi_03.png" alt="">
+                            <div class="media-body">
+                                <h5 class="mt-0"><a asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@comment.UserId">@comment.UserId</a></h5>
+                                <p>@comment.Description</p>
+                                Publicado el @comment.PubDate
+                                <hr />
+                            </div>
                         </div>
-                    </div>
+                    }
+
                 </div>
             </div>
             <!-- /.row -->

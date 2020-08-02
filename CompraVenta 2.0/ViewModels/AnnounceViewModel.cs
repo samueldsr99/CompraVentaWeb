@@ -24,7 +24,13 @@ namespace CompraVenta.ViewModels
         public double Price { get; set; }
         public string Description { get; set; }
 
+        public List<Comment> Comments { get; set; }
+
         public ArticleCategory getCategory() => AnnounceViewModel.getCategory(Category);
+
+        /******** Comment Form **************/
+        public string CommentFormDescription { get; set; }
+
         public static ArticleCategory getCategory(string s)
         {
             switch (s)

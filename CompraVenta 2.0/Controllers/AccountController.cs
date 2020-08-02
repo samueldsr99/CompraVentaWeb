@@ -61,6 +61,8 @@ namespace CompraVenta.Controllers
         [HttpGet]
         public IActionResult Login() => View();
 
+        public IActionResult ForgotPassword() => View();
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {

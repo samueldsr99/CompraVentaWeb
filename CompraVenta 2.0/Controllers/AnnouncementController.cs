@@ -27,7 +27,7 @@ namespace CompraVenta.Controllers
                 SearchText = model.SearchText
             });
         }
-        [HttpPost]
+        [HttpGet]
         public IActionResult Filter(AnnouncementsViewModel model)
         {
             var list = ToAnnounceViewModel(context.Announcements);
@@ -83,11 +83,12 @@ namespace CompraVenta.Controllers
             }
             return View(model);
         }
-
+        [HttpGet]
         public IActionResult AnnouncementDetails(int? id)
         {
             var announcement = context.Announcements.FirstOrDefault(e => e.Id.Equals(id));
             var article = context.Articles.FirstOrDefault(e => e.Id.Equals(announcement.ArticleId));
+            var comments = context.Comments.Where(e => e.AnnouncementId.Equals(id)).OrderByDescending(e => e.PubDate);
             var obj = new AnnounceViewModel
             {
                 Id = announcement.Id,
@@ -97,9 +98,25 @@ namespace CompraVenta.Controllers
                 SellerUserName = article.SellerUserName,
                 Category = article.Category.ToString(),
                 Description = article.Description,
-                Price = article.Price
+                Price = article.Price,
+                Comments = comments.ToList(),
             };
             return View(obj);
+        }
+        [HttpPost]
+        public IActionResult AnnouncementDetails(AnnounceViewModel model)
+        {
+            var date = DateTime.Now;
+            var comment = new Comment
+            {
+                Description = model.CommentFormDescription,
+                UserId = User.Identity.Name,
+                PubDate = date,
+                AnnouncementId = model.Id,
+            };
+            context.Comments.Add(comment);
+            context.SaveChanges();
+            return RedirectToAction("AnnouncementDetails", model.Id);
         }
 
         /**************************< Utility Functions >****************************************/
