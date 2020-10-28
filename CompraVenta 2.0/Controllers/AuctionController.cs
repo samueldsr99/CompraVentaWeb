@@ -6,9 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using System.IO;
 
 namespace CompraVenta.Controllers
 {
+    [Authorize]
     public class AuctionController : Controller
     {
         private readonly AppDbContext context;
@@ -26,6 +29,26 @@ namespace CompraVenta.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                if (model.Begin.CompareTo(model.End) == 1)
+                {
+                    ModelState.AddModelError("Fecha", "La fecha de inicio no puede ser mayor que la fecha de fin.");
+                    return View(model);
+                }
+
+                string uniqueFileName = null;
+                if (model.ImageFile != null)
+                {
+                    string uploadsFolder = "./wwwroot/images/";
+                    uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ImageFile.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fs = new FileStream(filePath, FileMode.Create))
+                    {
+                        model.ImageFile.CopyTo(fs);
+                    }
+                }
+
                 var auction = new Auction
                 {
                     Title = model.Title,
@@ -37,13 +60,8 @@ namespace CompraVenta.Controllers
                     Begin = model.Begin,
                     End = model.End,
                     SellerUserName = User.Identity.Name,
+                    ImageFilePath = uniqueFileName
                 };
-
-                if (model.Begin.CompareTo(model.End) == 1)
-                {
-                    ModelState.AddModelError("Fecha", "La fecha de inicio no puede ser mayor que la fecha de fin.");
-                    return View(model);
-                }
 
                 context.Auctions.Add(auction);
                 context.SaveChanges();
@@ -89,6 +107,7 @@ namespace CompraVenta.Controllers
             var auction = context.Auctions.FirstOrDefault(e => e.Id.Equals(id));
             return View(ToAuctionViewModel(auction));
         }
+
         [HttpPost]
         public IActionResult Details(AuctionViewModel model)
         {
@@ -108,6 +127,7 @@ namespace CompraVenta.Controllers
         }
 
         /**************************< Utility Functions >****************************************/
+
         private AuctionViewModel ToAuctionViewModel(Auction auction)
         {
             return new AuctionViewModel
@@ -122,6 +142,7 @@ namespace CompraVenta.Controllers
                 AName = auction.AName,
                 Begin = auction.Begin,
                 End = auction.End,
+                ImageFilePath = auction.ImageFilePath,
                 SellerUserName = auction.SellerUserName
             };
         }

@@ -54,6 +54,8 @@ namespace CompraVenta.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed");
 
+                    b.Property<string>("ProfileImagePath");
+
                     b.Property<string>("SecurityStamp");
 
                     b.Property<bool>("TwoFactorEnabled");
@@ -101,6 +103,8 @@ namespace CompraVenta.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<string>("ImageFilePath");
+
                     b.Property<string>("Name");
 
                     b.Property<double>("Price");
@@ -132,6 +136,8 @@ namespace CompraVenta.Migrations
 
                     b.Property<DateTime>("End");
 
+                    b.Property<string>("ImageFilePath");
+
                     b.Property<string>("SellerUserName");
 
                     b.Property<double>("StartPrice");
@@ -160,6 +166,36 @@ namespace CompraVenta.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("CompraVenta.Models.ShoppingCar", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("TotalPrice");
+
+                    b.Property<string>("UserName");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShoppingCar");
+                });
+
+            modelBuilder.Entity("CompraVenta.Models.UserArticle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ArticleId");
+
+                    b.Property<string>("UserName");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserArticle");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

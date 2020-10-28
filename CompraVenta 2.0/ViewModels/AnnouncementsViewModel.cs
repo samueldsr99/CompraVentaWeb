@@ -21,17 +21,8 @@ namespace CompraVenta.ViewModels
         public double MinPrice { get; set; }
         public double MaxPrice { get; set; }
 
-        // Unused for now
         public int Page { get; set; }
-        public bool IsLastPage()
-        {
-            return Pages() == Page;
-        }
-        public int Pages()
-        {
-            int len = Announcements.Count();
-            return len % 5 == 0 ? len / 5 : len / 5 + 1;
-        }
+        public int TotalPages { get; set; }
         public int FirstAnnounceOnPage() => (Page - 1) * 5;
         public int LastAnnounceOnPage() => FirstAnnounceOnPage() + 4;
     }

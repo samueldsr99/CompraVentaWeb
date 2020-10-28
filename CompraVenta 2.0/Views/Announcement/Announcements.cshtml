@@ -66,7 +66,7 @@
                                     int prev = Model.Page - 1;
                                     int next = Model.Page + 1;
                                 }
-                                @if (Model.Page == 1)
+                                @if (Model.Page <= 1)
                                 {
                                     <a class="page-link disabled">&larr; Older</a>
                                 }
@@ -76,7 +76,7 @@
                                 }
                             </li>
                             <li class="page-item">
-                                @if (Model.IsLastPage())
+                                @if (Model.Page >= Model.TotalPages)
                                 {
                                     <a class="page-link disabled">Newer &rarr;</a>
                                 }

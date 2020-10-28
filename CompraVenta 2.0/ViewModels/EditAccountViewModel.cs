@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace CompraVenta.ViewModels
         [Required]
         [DataType(DataType.Text)]
         public string UserName { get; set; }
+
         public string Name { get; set; }
 
         [Phone]
@@ -34,5 +36,13 @@ namespace CompraVenta.ViewModels
         [Compare("NewPassword",
                 ErrorMessage = "La contraseña y la confirmación no coinciden.")]
         public string Confirmation { get; set; }
+
+        public string Role { get; set; }
+
+        [Required(ErrorMessage = "Por favor seleccione una imagen")]
+        [Display(Name = "Profile Picture")]
+        public IFormFile ProfileImage { get; set; }
+
+        public string ProfileImagePath { get; set; }
     }
 }

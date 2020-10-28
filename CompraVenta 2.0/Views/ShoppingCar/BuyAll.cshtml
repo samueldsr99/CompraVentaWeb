@@ -1,0 +1,31 @@
+﻿@using CompraVenta.ViewModels;
+@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<Account> SignInManager
+@model AnnounceViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contact-main">
+    <div class="container">
+        <!-- Content Row -->
+        <div class="row">
+            <!-- Map Column -->
+            <div class="col-lg-8 mt-4 contact-left">
+                <h3>Introduzca los datos de su tarjeta para efectuar la compra</h3>
+
+                <form method="post" class="my-5">
+                    <div class="control-group form-group">
+                        <input type="number" class="form-control" placeholder="numero de tarjeta" />
+                    </div>
+                    <div class="control-group form-group">
+                        <input type="password" class="form-control" placeholder="PIN" />
+                    </div>
+
+                    <button type="submit" class="btn btn-success mt-2" asp-action="BuyAll" asp-controller="ShoppingCar" asp-route-username="@User.Identity.Name">Comprar</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

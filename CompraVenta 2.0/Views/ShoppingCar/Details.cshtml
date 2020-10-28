@@ -1,0 +1,59 @@
+﻿@using CompraVenta.ViewModels;
+@model ShoppingCarViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="wrapper-main">
+    <div class="full-title">
+        <div class="container">
+            <!-- Page Heading/Breadcrumbs -->
+            <h1 class="mt-4 mb-3"> Carro de Compras </h1>
+            <div class="breadcrumb-main">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="blog-main">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 blog-entries">
+                    <h4>Tienes @Model.Articles.Count  Artículo(s) en el carrito.</h4>
+                    <h5 class="my-4">Precio total @Model.TotalPrice .</h5>
+                    <hr />
+
+                    @foreach (var article in Model.Articles)
+                    {
+                        <div class="card mb4 my-4">
+                            <div class="card-body">
+                                <h2 class="card-title">@article.Name</h2>
+                                <hr />
+                                <h6 class="card-title my-4">Precio: @article.Price</h6>
+
+                                <h5 class="card-subtitle">Vendedor: <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@article.SellerUserName">@article.SellerUserName</a></h5>
+                            </div>
+
+                            <div class="card card-footer">
+                                <form method="post">
+                                    <button type="submit" class="btn btn-danger mt-2" asp-action="RemoveFromCar" asp-controller="ShoppingCar" asp-route-articleId="@article.Id">Eliminar del carrito</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 blog-entries">
+                    <a class="btn btn-success" asp-action="BuyAll" asp-controller="ShoppingCar">Comprar todo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

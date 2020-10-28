@@ -23,5 +23,7 @@ namespace CompraVenta.Models
         public double Price { get; set; }
         public string Description { get; set; }
         public string SellerUserName { get; set; }
+
+        public string ImageFilePath { get; set; }
     }
 }

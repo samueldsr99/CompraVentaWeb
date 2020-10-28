@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,9 @@ namespace CompraVenta.Models
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
+        
+        public DbSet<UserArticle> UserArticle { get; set; }
+        public DbSet<ShoppingCar> ShoppingCar { get; set; }
         public DbSet<Account> Users { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<Announcement> Announcements { get; set; }

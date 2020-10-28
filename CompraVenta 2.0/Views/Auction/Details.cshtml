@@ -44,8 +44,15 @@
                     <h1 class="text-center">@Model.AName</h1>
                     <h3 class="text-left text-secondary">Categoría: @Model.ACategory.</h3>
                     <h5 class="text-center">por <a asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@Model.SellerUserName">@Model.SellerUserName</a></h5>
-                    <!-- Preview Image Not implemented yet! -->
-                    <img class="img-fluid rounded" src="~/images/blog-item-01.jpg" alt="" />
+                    
+                    @if (Model.ImageFilePath != null)
+                    {
+                        <img class="img-fluid rounded" src="~/images/@Model.ImageFilePath" />
+                    }
+                    else
+                    {
+                        <img class="img-fluid rounded" src="~/images/user.png" alt="" />
+                    }
                     <hr>
                     <!-- Date/Time -->
                     <p class="text-black-50">Fecha de inicio: @Model.Begin</p>
@@ -90,51 +97,6 @@
                             <button class="btn btn-primary right">Pujar</button>
                         </form>
                     }
-                    <div class="blog-right-side">
-                        <!-- Comments Form -->
-                        <div class="card my-4">
-                            <h5 class="card-header">Deja un comentario:</h5>
-                            <div class="card-body">
-                                <form>
-                                    <div class="form-group">
-                                        <textarea class="form-control" rows="3"></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Single Comment -->
-                    <div class="media mb-4">
-                        <img class="d-flex mr-3 rounded-circle" src="images/testi_01.png" alt="">
-                        <div class="media-body">
-                            <h5 class="mt-0">Commenter Name</h5>
-                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                        </div>
-                    </div>
-
-                    <!-- Comment with nested comments -->
-                    <div class="media mb-4">
-                        <img class="d-flex mr-3 rounded-circle" src="images/testi_02.png" alt="">
-                        <div class="media-body">
-                            <h5 class="mt-0">Commenter Name</h5>
-                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                            <div class="media mt-4">
-                                <img class="d-flex mr-3 rounded-circle" src="images/testi_01.png" alt="">
-                                <div class="media-body">
-                                    <h5 class="mt-0">Commenter Name</h5>
-                                    Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Single Comment -->
-                    <div class="media mb-4">
-                        <img class="d-flex mr-3 rounded-circle" src="images/testi_03.png" alt="">
-                        <div class="media-body">
-                            <h5 class="mt-0">Commenter Name</h5>
-                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                        </div>
                     </div>
                 </div>
             </div>
@@ -142,4 +104,3 @@
         </div>
         <!-- /.container -->
     </div>
-</div>

@@ -1,0 +1,54 @@
+﻿@using CompraVenta.ViewModels;
+@model ListUsersViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="wrapper-main">
+    <div class="full-title">
+        <div class="container">
+            <!-- Page Heading/Breadcrumbs -->
+            <h1 class="mt-4 mb-3">Usuarios</h1>
+            <div class="breadcrumb-main">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped" cellspacing="0">
+                <thead>
+                    <tr>
+                        <td><strong>Nombre de usuario</strong></td>
+                        <td><strong>Correo</strong></td>
+                        <td><strong>Teléfono</strong></td>
+                        <td><strong>Rol</strong></td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                    <tr>
+                        <td><a asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@user.UserName">@user.UserName</a></td>
+                        <td>@user.Email</td>
+                        @if (!string.IsNullOrEmpty(user.Phone))
+                        {
+                            <td>@user.Phone</td>
+                        }
+                        else
+                        {
+                            <td>--</td>
+                        }
+                        <td>@user.Role</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

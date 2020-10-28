@@ -1,12 +1,14 @@
 # Proyecto de Ingeniería de Software
 
 ## TODO
+    - Implementar carrito de compras.
+    - Implementar pasarela de pago.
     - Trabajar en la vista Contáctanos.
     - El perfil de usuario sigue siendo un poco básico al no tener algunas opciones como *olvidaste la contraseña?*.
     - Refinar las vistas para quitar los detalles innecesarios de los templates.
 
 ## Funcionalidades
-    - Login y Register.
+    - Autenticacion y autorizacion.
     - Ver lista articulos anunciados.
     - Ver detalles de articulos anunciados.
     - Anunciar Articulos.

@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using CompraVenta.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CompraVenta_2._0
 {
@@ -37,9 +39,22 @@ namespace CompraVenta_2._0
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddIdentity<Account, IdentityRole>()
-                    .AddEntityFrameworkStores<AppDbContext>();
-            services.AddMvc().AddXmlSerializerFormatters();
+            services.AddIdentity<Account, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 4;
+                options.Password.RequiredUniqueChars = 0;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
+            }).AddEntityFrameworkStores<AppDbContext>();
+
+            services.AddMvc(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                                   .RequireAuthenticatedUser()
+                                   .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            }).AddXmlSerializerFormatters();
             services.AddScoped<IUserRepository, SQLUserRepository>();
         }
 

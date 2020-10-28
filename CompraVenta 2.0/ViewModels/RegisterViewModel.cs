@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,16 +11,12 @@ namespace CompraVenta.ViewModels
     public class RegisterViewModel
     {
         [Required]
-        [DataType(DataType.Text)]
-        public string UserName { get; set; }
-        public string Name { get; set; }
-
-        [Phone]
-        public string PhoneNumber { get; set; }
-
-        [Required]
         [EmailAddress]
         public string Email { get; set; }
+
+        [Required]
+        [DataType(DataType.Text)]
+        public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -32,5 +30,8 @@ namespace CompraVenta.ViewModels
         [Compare("Password",
                 ErrorMessage ="La contraseña y la confirmación no coinciden.")]
         public string Confirmation { get; set; }
+
+        [DataType(DataType.Upload)]
+        public IFormFile ProfileImage { get; set; }
     }
 }

@@ -1,13 +1,16 @@
 ﻿using CompraVenta.Models;
 using CompraVenta.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace CompraVenta.Controllers
 {
+    [Authorize]
     public class AnnouncementController : Controller
     {
         private readonly AppDbContext context;
@@ -15,18 +18,29 @@ namespace CompraVenta.Controllers
         {
             this.context = context;
         }
+
         [HttpGet]
-        public IActionResult Announcements(AnnouncementsViewModel model)
+        public IActionResult Announcements(AnnouncementsViewModel model, string page)
         {
+            if (model.Page != null && page == null)
+            {
+                model.Page = int.Parse(page);
+            }
             List<AnnounceViewModel> announcements = ToAnnounceViewModel(context.Announcements);
+
+            int amount = announcements.Count;
+
+            announcements = announcements.Skip(4 * (model.Page - 1)).ToList().Take(4).ToList();
 
             return View(new AnnouncementsViewModel
             {
                 Announcements = announcements,
                 Page = model.Page,
-                SearchText = model.SearchText
+                SearchText = model.SearchText,
+                TotalPages = (amount / 4) + 1
             });
         }
+
         [HttpGet]
         public IActionResult Filter(AnnouncementsViewModel model)
         {
@@ -43,7 +57,9 @@ namespace CompraVenta.Controllers
                 SearchText = model.SearchText,
                 MinPrice = model.MinPrice,
                 MaxPrice = model.MaxPrice,
-                Category = model.Category
+                Category = model.Category,
+                Page = 1,
+                TotalPages = 1
             });
         }
 
@@ -56,13 +72,28 @@ namespace CompraVenta.Controllers
             var date = DateTime.Now;
             if (ModelState.IsValid)
             {
+
+                string uniqueFileName = null;
+                if (model.ImageFile != null)
+                {
+                    string uploadsFolder = "./wwwroot/images/";
+                    uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ImageFile.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fs = new FileStream(filePath, FileMode.Create))
+                    {
+                        model.ImageFile.CopyTo(fs);
+                    }
+                }
+
                 var article = new Article
                 {
                     Name = model.Name,
                     Category = model.getCategory(),
                     Price = model.Price,
                     Description = model.Description,
-                    SellerUserName = User.Identity.Name
+                    SellerUserName = User.Identity.Name,
+                    ImageFilePath = uniqueFileName,
                 };
                 context.Articles.Add(article);
                 context.SaveChanges();
@@ -83,26 +114,48 @@ namespace CompraVenta.Controllers
             }
             return View(model);
         }
+
         [HttpGet]
         public IActionResult AnnouncementDetails(int? id)
         {
             var announcement = context.Announcements.FirstOrDefault(e => e.Id.Equals(id));
-            var article = context.Articles.FirstOrDefault(e => e.Id.Equals(announcement.ArticleId));
+            var article_ = context.Articles.FirstOrDefault(e => e.Id.Equals(announcement.ArticleId));
             var comments = context.Comments.Where(e => e.AnnouncementId.Equals(id)).OrderByDescending(e => e.PubDate);
+
+            var userArticles = from userArticle in context.UserArticle
+                               join article in context.Articles on userArticle.ArticleId equals article.Id
+                               select new
+                               {
+                                   Id = article.Id,
+                                   Name = article.Name,
+                                   Price = article.Price,
+                                   Category = article.Category,
+                                   UserName = userArticle.UserName,
+                                   SellerUserName = article.SellerUserName
+                               };
+            userArticles = userArticles.Where(e => e.UserName.Equals(User.Identity.Name));
+
+            bool inCar = userArticles.FirstOrDefault(e => e.Id.Equals(id)) != null;
+
+
             var obj = new AnnounceViewModel
             {
                 Id = announcement.Id,
+                ArticleId = article_.Id,
                 Title = announcement.Title,
                 Date = announcement.Date,
-                Name = article.Name,
-                SellerUserName = article.SellerUserName,
-                Category = article.Category.ToString(),
-                Description = article.Description,
-                Price = article.Price,
+                Name = article_.Name,
+                SellerUserName = article_.SellerUserName,
+                Category = article_.Category.ToString(),
+                Description = article_.Description,
+                Price = article_.Price,
                 Comments = comments.ToList(),
+                ImagePath = article_.ImageFilePath,
+                InCar = inCar
             };
             return View(obj);
         }
+
         [HttpPost]
         public IActionResult AnnouncementDetails(AnnounceViewModel model)
         {

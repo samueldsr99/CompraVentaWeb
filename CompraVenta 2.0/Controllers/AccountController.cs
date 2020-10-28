@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CompraVenta.Models;
 using CompraVenta.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CompraVenta.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<Account> userManager;
@@ -16,7 +20,8 @@ namespace CompraVenta.Controllers
         private readonly AppDbContext context;
 
         public AccountController(UserManager<Account> userManager,
-                                SignInManager<Account> signInManager, AppDbContext context)
+                                SignInManager<Account> signInManager,
+                                AppDbContext context)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -24,47 +29,70 @@ namespace CompraVenta.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new Account
+                var userByEmail = await userManager.FindByEmailAsync(model.Email);
+                if (userByEmail == null)
                 {
-                    UserName = model.UserName,
-                    Name = model.Name,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
-                    Description = model.Details,
-                };
-                var result = await userManager.CreateAsync(user, model.Password);
+                    var user = new Account
+                    {
+                        UserName = model.UserName,
+                        Email = model.Email,
+                        Description = model.Details,
+                    };
+                    var result = await userManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
-                {
-                    await signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    if (result.Succeeded)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: false);
+
+                        await userManager.AddToRoleAsync(user, "Client");
+
+                        context.ShoppingCar.Add(new ShoppingCar
+                        {
+                            TotalPrice = 0,
+                            UserName = model.UserName
+                        });
+
+                        context.SaveChanges();
+
+                        return RedirectToAction("Index", "Home");
+                    }
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
                 }
-
-                foreach (var error in result.Errors)
+                else
                 {
-                    ModelState.AddModelError("", error.Description);
+                    ModelState.AddModelError("", $"El correo {model.Email} ya existe.");
                 }
             }
+            
             return View(model);
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login() => View();
 
+        [HttpGet]
+        [AllowAnonymous]
         public IActionResult ForgotPassword() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -72,7 +100,24 @@ namespace CompraVenta.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    if (context.ShoppingCar.FirstOrDefault(e => e.UserName.Equals(model.UserName)) == null)
+                    {
+                        context.ShoppingCar.Add(new ShoppingCar
+                        {
+                            UserName = model.UserName,
+                            TotalPrice = 0
+                        });
+                        context.SaveChanges();
+                    }
+
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return LocalRedirect(returnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
 
                 ModelState.AddModelError(string.Empty, "Login Fallido");
@@ -84,14 +129,17 @@ namespace CompraVenta.Controllers
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
+
             return RedirectToAction("Index", "Home");
         }
         
+        [HttpGet]
         public IActionResult AccountDetails(string userName)
         {
             var account = userManager.Users.FirstOrDefault(e => e.UserName.Equals(userName));
             return View(account);
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(string userName)
         {
@@ -103,20 +151,44 @@ namespace CompraVenta.Controllers
                 Email = account.Email,
                 Details = account.Description,
                 PhoneNumber = account.PhoneNumber,
+                ProfileImagePath = account.ProfileImagePath
             };
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> Edit(EditAccountViewModel model)
         {
             if (ModelState.IsValid)
             {
+
                 var account = await userManager.FindByNameAsync(model.UserName);
+
+                if (User.IsInRole("Admin") && model.Role != null)
+                {
+                    string oldRole = model.Role == "Admin" ? "Client" : "Admin";
+                    await userManager.RemoveFromRoleAsync(account, oldRole);
+                    await userManager.AddToRoleAsync(account, model.Role);
+                }
 
                 account.Email = model.Email;
                 account.Name = model.Name;
                 account.PhoneNumber = model.PhoneNumber;
                 account.Description = model.Details;
+
+                string uniqueFileName = null;
+                if (model.ProfileImage != null)
+                {
+                    string uploadsFolder = "./wwwroot/images/";
+                    uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fs = new FileStream(filePath, FileMode.Create))
+                    {
+                        model.ProfileImage.CopyTo(fs);
+                    }
+                }
+                account.ProfileImagePath = uniqueFileName;
 
                 var result = await userManager.UpdateAsync(account);
 
@@ -153,7 +225,14 @@ namespace CompraVenta.Controllers
                     }
                 }
             }
-            return View(model);
+            return RedirectToAction("Edit", new { username = User.Identity.Name });
+        }
+
+        [AcceptVerbs("Get, Post")]
+        public IActionResult AccessDenied(string returnUrl)
+        {
+            ViewBag.returnUrl = returnUrl;
+            return View();
         }
     }
 }

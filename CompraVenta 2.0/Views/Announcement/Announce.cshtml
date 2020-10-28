@@ -24,8 +24,19 @@
                 <!-- Map Column -->
                 <div class="col-lg-8 mb-4 contact-left">
                     <h3> Rellene el formulario </h3>
-                    <form method="post" name="sentMessage" id="contactForm" novalidate>
+                    <form method="post" enctype="multipart/form-data">
                         <div asp-validation-summary="All" class="text-danger"></div>
+
+                        <input type="hidden" asp-for="ImagePath" />
+
+                        <div class="input-group">
+                            <span class="form-group">
+                                <label asp-for="ImageFile"><strong style="margin-bottom: 0">Inserte una imagen</strong></label>
+                                <input type="file" class="" asp-for="ImageFile" style="margin-top: 0" />
+                                <span asp-validation-for="ImageFile" class="text-danger"></span>
+                            </span>
+                        </div>
+
                         <div class="control-group form-group">
                             <div class="controls">
                                 <input asp-for="Title" type="text" placeholder="Título del anuncio" class="form-control" id="title" required data-validation-required-message="Entre el título del artículo.">

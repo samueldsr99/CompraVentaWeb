@@ -14,8 +14,20 @@
                     <!-- Map Column -->
                     <div class="col-lg-8 mb-4 contact-left">
                         <h3>Editar Cuenta</h3>
-                        <form method="post" name="sentMessage" id="contactForm">
+
+                        <form method="post" name="sentMessage" id="contactForm" enctype="multipart/form-data">
                             <div asp-validation-summary="All" class="text-danger"></div>
+
+                            <input type="hidden" asp-for="ProfileImagePath" value="@Model.ProfileImagePath" />
+
+                            <div class="input-group">
+                                <span class="form-group">
+                                    <label asp-for="ProfileImage" value="@Model.ProfileImage"><strong style="margin-bottom: 0">Inserte una imagen</strong></label>
+                                    <input type="file" class="" asp-for="ProfileImage" value="@Model.ProfileImage" style="margin-top: 0" />
+                                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                                </span>
+                            </div>
+
                             <div class="control-group form-group">
                                 <div class="controls">
                                     <input type="tel" asp-for="UserName" value="@Model.UserName" class="form-control" disabled>
@@ -45,7 +57,7 @@
                                     <textarea rows="2" cols="100" asp-for="Details" value="@Model.Details" placeholder="Información" class="form-control" id="message" maxlength="999" style="resize:none"></textarea>
                                 </div>
                             </div>
-                            <h3>Cambiar contraseña (opcional)</h3>
+                            <h3>Cambiar contraseña</h3>
                             <div class="control-group form-group">
                                 <div class="controls">
                                     <input type="password" asp-for="OldPassword" placeholder="Contraseña Actual" class="form-control" id="password">
@@ -64,6 +76,18 @@
                                     <span asp-validation-for="Confirmation" class="text-danger"></span>
                                 </div>
                             </div>
+
+                            @if (User.IsInRole("Admin") && !User.Identity.Name.Equals(Model.UserName))
+                            {
+                                <hr />
+                                <div class="control-group form-group">
+                                    <select asp-for="Role" class="dropdown dropdown-header">
+                                        <option class="dropdown dropdown-item" value="Client">Cliente</option>
+                                        <option class="dropdown dropdown-item" value="Admin">Administrador</option>
+                                    </select>
+                                </div>
+                            }
+
                             <div id="success"></div>
                             <!-- For success/fail messages -->
                             <button type="submit" class="btn btn-primary" id="sendMessageButton">Editar</button>

@@ -13,19 +13,15 @@
                     <!-- Map Column -->
                     <div class="col-lg-8 mb-4 contact-left">
                         <h3>Nueva Cuenta</h3>
+
                         <form method="post" name="sentMessage" id="contactForm">
                             <div asp-validation-summary="All" class="text-danger"></div>
+                            
                             <div class="control-group form-group">
                                 <div class="controls">
                                     <input type="text" asp-for="UserName" placeholder="Nombre de Usuario" class="form-control" id="name" required data-validation-required-message="Introduzca su nombre de usuario.">
                                     <span asp-validation-for="UserName" class="text-danger"></span>
                                     <p class="help-block"></p>
-                                </div>
-                            </div>
-                            <div class="control-group form-group">
-                                <div class="controls">
-                                    <input type="tel" asp-for="PhoneNumber" placeholder="Número de Teléfono" class="form-control" id="phone" required data-validation-required-message="Especifique el número de teléfono.">
-                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="control-group form-group">
