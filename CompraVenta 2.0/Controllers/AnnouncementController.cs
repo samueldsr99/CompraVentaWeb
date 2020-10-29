@@ -22,7 +22,7 @@ namespace CompraVenta.Controllers
         [HttpGet]
         public IActionResult Announcements(AnnouncementsViewModel model, string page)
         {
-            if (model.Page != null && page == null)
+            if (!string.IsNullOrEmpty(page))
             {
                 model.Page = int.Parse(page);
             }
@@ -42,8 +42,13 @@ namespace CompraVenta.Controllers
         }
 
         [HttpGet]
-        public IActionResult Filter(AnnouncementsViewModel model)
+        public IActionResult Filter(AnnouncementsViewModel model, string page)
         {
+            if (model.Page == null)
+            {
+                model.Page = int.Parse(page);
+            }
+
             var list = ToAnnounceViewModel(context.Announcements);
             var filter = list.AsEnumerable();
             if (AnnounceViewModel.getCategory(model.Category) != ArticleCategory.All)
@@ -51,6 +56,10 @@ namespace CompraVenta.Controllers
             if (model.SearchText != null && model.SearchText != "")
                 filter = FilterByText(filter, model.SearchText);
             filter = FilterByPrice(filter, model.MinPrice, model.MaxPrice);
+
+            long amount = filter.Count();
+            filter = filter.Skip(4 * (model.Page - 1)).ToList().Take(4).ToList();
+
             return View("Announcements", new AnnouncementsViewModel
             {
                 Announcements = filter,
@@ -58,8 +67,8 @@ namespace CompraVenta.Controllers
                 MinPrice = model.MinPrice,
                 MaxPrice = model.MaxPrice,
                 Category = model.Category,
-                Page = 1,
-                TotalPages = 1
+                Page = model.Page,
+                TotalPages = (int)amount / 4
             });
         }
 

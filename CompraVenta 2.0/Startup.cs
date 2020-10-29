@@ -38,7 +38,7 @@ namespace CompraVenta_2._0
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+            
             services.AddIdentity<Account, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 4;
@@ -74,7 +74,7 @@ namespace CompraVenta_2._0
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

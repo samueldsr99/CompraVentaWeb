@@ -38,9 +38,7 @@ namespace CompraVenta.ViewModels
         public string Confirmation { get; set; }
 
         public string Role { get; set; }
-
-        [Required(ErrorMessage = "Por favor seleccione una imagen")]
-        [Display(Name = "Profile Picture")]
+        
         public IFormFile ProfileImage { get; set; }
 
         public string ProfileImagePath { get; set; }
