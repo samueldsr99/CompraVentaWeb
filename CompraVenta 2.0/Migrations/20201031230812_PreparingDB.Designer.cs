@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CompraVenta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201028181552_Added Image Field for Auction")]
-    partial class AddedImageFieldforAuction
+    [Migration("20201031230812_PreparingDB")]
+    partial class PreparingDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

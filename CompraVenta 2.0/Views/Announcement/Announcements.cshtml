@@ -72,7 +72,13 @@
                                 }
                                 else
                                 {
-                                    <a class="page-link" asp-action="Announcements" asp-controller="Announcement" asp-route-Page="@prev">&larr; Older</a>
+                                    <a class="page-link" asp-action="Announcements" asp-controller="Announcement" 
+                                       asp-route-page="@prev"
+                                       asp-route-text="@Model.SearchText"
+                                       asp-route-minPrice="@Model.MinPrice"
+                                       asp-route-maxPrice="@Model.MaxPrice"
+                                       asp-route-category="@Model.Category"
+                                    >&larr; Older</a>
                                 }
                             </li>
                             <li class="page-item">
@@ -82,7 +88,13 @@
                                 }
                                 else
                                 {
-                                    <a class="page-link" asp-action="Announcements" asp-controller="Announcement" asp-route-page="@next">Newer &rarr;</a>
+                                    <a class="page-link" asp-action="Announcements" asp-controller="Announcement" 
+                                       asp-route-page="@next"
+                                       asp-route-text="@Model.SearchText"
+                                       asp-route-minPrice="@Model.MinPrice"
+                                       asp-route-maxPrice="@Model.MaxPrice"
+                                       asp-route-category="@Model.Category"
+                                    >&larr; Older</a>
                                 }
                             </li>
                         </ul>
@@ -91,11 +103,11 @@
                 <!-- Sidebar Widgets Column -->
                 <div class="col-md-4 blog-right-side">
                     <!-- Search Widget -->
-                    <form method="get" asp-action="Filter" asp-controller="Announcement" class="card mb-4">
+                    <form method="get" asp-action="Announcements" asp-controller="Announcement" class="card mb-4">
                         <h5 class="card-header">Buscar:</h5>
                         <div class="card-body">
                             <div class="input-group">
-                                <input type="text" asp-for="SearchText" class="form-control" placeholder="Texto...">
+                                <input type="text" asp-for="SearchText" value="@Model.SearchText" class="form-control" placeholder="Texto...">
                             </div>
                         </div>
                         <div class="card my-4">
@@ -106,6 +118,7 @@
                                 <option class="custom-select-lg" value="Electronico">Electrónico</option>
                                 <option class="custom-select-lg" value="Vivienda">Vivienda</option>
                                 <option class="custom-select-lg" value="Autos">Autos</option>
+                                <option class="custom-select-lg" value="Vestuario">Vestuario</option>
                             </select>
                         </div>
 

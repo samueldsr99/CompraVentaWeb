@@ -12,6 +12,8 @@ namespace CompraVenta.Models
         Vivienda,
         Autos,
         Undefined,
+        Vestuario,
+        Otro,
         All
     };
 

@@ -13,13 +13,19 @@ namespace CompraVenta.Models
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
-        
+
         public DbSet<UserArticle> UserArticle { get; set; }
+
         public DbSet<ShoppingCar> ShoppingCar { get; set; }
-        public DbSet<Account> Users { get; set; }
+
+        public new DbSet<Account> Users { get; set; }
+
         public DbSet<Article> Articles { get; set; }
+
         public DbSet<Announcement> Announcements { get; set; }
+
         public DbSet<Auction> Auctions { get; set; }
+
         public DbSet<Comment> Comments { get; set; }
     }
 }

@@ -18,8 +18,8 @@ namespace CompraVenta.ViewModels
         public IEnumerable<AnnounceViewModel> Announcements { get; set; }
         public string SearchText{ get; set; }
         public string Category { get; set; }
-        public double MinPrice { get; set; }
-        public double MaxPrice { get; set; }
+        public double? MinPrice { get; set; }
+        public double? MaxPrice { get; set; }
 
         public int Page { get; set; }
         public int TotalPages { get; set; }

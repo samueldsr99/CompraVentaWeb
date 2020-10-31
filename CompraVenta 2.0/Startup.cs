@@ -68,13 +68,16 @@ namespace CompraVenta_2._0
             else
             {
                 app.UseStatusCodePagesWithReExecute("/Error/{0}");
+                app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
-            
+            IdentitySeedDB.SeedDB(app.ApplicationServices);
+            SeedDB.SeedData(app);
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

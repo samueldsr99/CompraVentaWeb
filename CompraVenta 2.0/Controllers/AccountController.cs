@@ -96,6 +96,9 @@ namespace CompraVenta.Controllers
         {
             if (ModelState.IsValid)
             {
+                PasswordHasher<Account> hasher = new PasswordHasher<Account>();
+                var hash = hasher.HashPassword(null, model.Password);
+                
                 var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
 
                 if (result.Succeeded)
@@ -106,7 +109,7 @@ namespace CompraVenta.Controllers
                         {
                             UserName = model.UserName,
                             TotalPrice = 0
-                        });
+                        }); 
                         context.SaveChanges();
                     }
 

@@ -20,55 +20,59 @@ namespace CompraVenta.Controllers
         }
 
         [HttpGet]
-        public IActionResult Announcements(AnnouncementsViewModel model, string page)
+        public IActionResult Announcements(double? maxPrice, double? minPrice, string searchText = "", string category = "", int page = 1)
         {
-            if (!string.IsNullOrEmpty(page))
+            var announcements = from announcement in context.Announcements
+                                join article in context.Articles on announcement.ArticleId equals article.Id
+                                select new AnnounceViewModel
+                                {
+                                    Id = announcement.Id,
+                                    ArticleId = article.Id,
+                                    Title = announcement.Title,
+                                    SellerUserName = article.SellerUserName,
+                                    Date = announcement.Date,
+                                    Name = article.Name,
+                                    Category = article.Category.ToString(),
+                                    Price = article.Price,
+                                    Description = article.Description
+                                };
+            // Filter by category
+            if (!string.IsNullOrEmpty(category) && category.ToLower() != "all")
             {
-                model.Page = int.Parse(page);
+                announcements = announcements.Where(e => e.getCategory() == AnnounceViewModel.getCategory(category));
             }
-            List<AnnounceViewModel> announcements = ToAnnounceViewModel(context.Announcements);
+            // Filter by price
+            if (minPrice != null)
+            {
+                announcements = announcements.Where(e => e.Price >= minPrice);
+            }
+            if (maxPrice != null)
+            {
+                announcements = announcements.Where(e => e.Price <= maxPrice);
+            }
+            // Filter by text
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                announcements = announcements.Where(e => 
+                                                    e.Description.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                                                    || e.Title.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                                                    || e.SellerUserName.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                                                    );
+            }
 
-            int amount = announcements.Count;
+            int amount = announcements.Count();
 
-            announcements = announcements.Skip(4 * (model.Page - 1)).ToList().Take(4).ToList();
+            announcements = announcements.OrderByDescending(e => e.Date).Skip(4 * (page - 1)).Take(4);
 
             return View(new AnnouncementsViewModel
             {
                 Announcements = announcements,
-                Page = model.Page,
-                SearchText = model.SearchText,
-                TotalPages = (amount / 4) + 1
-            });
-        }
-
-        [HttpGet]
-        public IActionResult Filter(AnnouncementsViewModel model, string page)
-        {
-            if (model.Page == null)
-            {
-                model.Page = int.Parse(page);
-            }
-
-            var list = ToAnnounceViewModel(context.Announcements);
-            var filter = list.AsEnumerable();
-            if (AnnounceViewModel.getCategory(model.Category) != ArticleCategory.All)
-                filter = FilterByCategory(list, AnnounceViewModel.getCategory(model.Category));
-            if (model.SearchText != null && model.SearchText != "")
-                filter = FilterByText(filter, model.SearchText);
-            filter = FilterByPrice(filter, model.MinPrice, model.MaxPrice);
-
-            long amount = filter.Count();
-            filter = filter.Skip(4 * (model.Page - 1)).ToList().Take(4).ToList();
-
-            return View("Announcements", new AnnouncementsViewModel
-            {
-                Announcements = filter,
-                SearchText = model.SearchText,
-                MinPrice = model.MinPrice,
-                MaxPrice = model.MaxPrice,
-                Category = model.Category,
-                Page = model.Page,
-                TotalPages = (int)amount / 4
+                Page = page,
+                SearchText = searchText,
+                MinPrice = minPrice,
+                MaxPrice = maxPrice,
+                Category = category,
+                TotalPages = (int)Math.Ceiling((decimal)amount / 4),
             });
         }
 
@@ -114,12 +118,7 @@ namespace CompraVenta.Controllers
                 };
                 context.Announcements.Add(announcement);
                 context.SaveChanges();
-                return View("Announcements", new AnnouncementsViewModel
-                {
-                    Announcements = ToAnnounceViewModel(context.Announcements),
-                    Page = 1,
-                    SearchText = ""
-                });
+                return RedirectToAction("Announcements");
             }
             return View(model);
         }
@@ -135,17 +134,16 @@ namespace CompraVenta.Controllers
                                join article in context.Articles on userArticle.ArticleId equals article.Id
                                select new
                                {
-                                   Id = article.Id,
-                                   Name = article.Name,
-                                   Price = article.Price,
-                                   Category = article.Category,
-                                   UserName = userArticle.UserName,
-                                   SellerUserName = article.SellerUserName
+                                   article.Id,
+                                   article.Name,
+                                   article.Price,
+                                   article.Category,
+                                   userArticle.UserName,
+                                   article.SellerUserName
                                };
             userArticles = userArticles.Where(e => e.UserName.Equals(User.Identity.Name));
 
             bool inCar = userArticles.FirstOrDefault(e => e.Id.Equals(id)) != null;
-
 
             var obj = new AnnounceViewModel
             {

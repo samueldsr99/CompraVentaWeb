@@ -55,17 +55,17 @@ namespace CompraVenta.ViewModels
 
         public static ArticleCategory getCategory(string s)
         {
-            switch (s)
+            switch (s.ToLower())
             {
-                case "Hogar":
+                case "hogar":
                     return ArticleCategory.Hogar;
-                case "Autos":
+                case "autos":
                     return ArticleCategory.Autos;
-                case "Vivienda":
+                case "vivienda":
                     return ArticleCategory.Vivienda;
-                case "Electronico":
+                case "electronico":
                     return ArticleCategory.Electronico;
-                case "All":
+                case "all":
                     return ArticleCategory.All;
                 default:
                     return ArticleCategory.Undefined;
