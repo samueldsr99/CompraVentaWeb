@@ -70,41 +70,79 @@ namespace CompraVenta.Controllers
             }
             return View(model);
         }
+
         [HttpGet]
-        public IActionResult Auctions()
+        public IActionResult Auctions(double? minPrice, double? maxPrice, string searchText="", string aCategory="All", string state="", int page=1)
         {
-            List<AuctionViewModel> auctions = ToAuctionViewModel(context.Auctions);
+            IQueryable<Auction> auctions = context.Auctions;
+
+            if (minPrice != null)
+            {
+                auctions = auctions.Where(e => minPrice <= e.CurrentPrice);
+            }
+            if (maxPrice != null)
+            {
+                auctions = auctions.Where(e => e.CurrentPrice <= maxPrice);
+            }
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                auctions = auctions
+                    .Where(e => e.Title.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                          || e.Details.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                          || e.AName.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                          || e.ACategory.ToString().Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                          || e.SellerUserName.ToString().Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                    );
+            }
+            if (!string.IsNullOrEmpty(aCategory) && aCategory.ToLower() != "all")
+            {
+                auctions = auctions.Where(e => AnnounceViewModel.getCategory(aCategory) == e.ACategory);
+            }
+            if (!string.IsNullOrEmpty(state) && state.ToLower() != "all")
+            {
+                DateTime now = DateTime.Now;
+
+                if (state.ToLower() == "closed")
+                {
+                    auctions = auctions.Where(e => e.End.CompareTo(now) == -1);
+                }
+                if (state.ToLower() == "coming")
+                {
+                    auctions = auctions.Where(e => e.Begin.CompareTo(now) == 1);
+                }
+                if (state.ToLower() == "running")
+                {
+                    auctions = auctions.Where(e => e.Begin.CompareTo(now) <= 0 && e.End.CompareTo(now) >= 0);
+                }
+            }
+
+            int amount = auctions.Count();
+
+            auctions = auctions.OrderByDescending(e => e.Begin).Skip(4 * (page - 1)).Take(4);
+
             return View(new AuctionsViewModel
             {
-                Auctions = auctions,
-                Page = 1,
-                SearchText = ""
+                Auctions = auctions.ToList(),
+                Page = page,
+                SearchText = searchText,
+                MinPrice = minPrice,
+                MaxPrice = maxPrice,
+                ACategory = aCategory,
+                State = state,
+                TotalPages = (int)Math.Ceiling((decimal)amount / 4)
             });
         }
-        [HttpPost]
-        public IActionResult Filter(AuctionsViewModel model)
-        {
-            var list = ToAuctionViewModel(context.Auctions);
-            var filter = list.AsEnumerable();
-            if (AnnounceViewModel.getCategory(model.ACategory) != ArticleCategory.All)
-                filter = FilterByCategory(list, AnnounceViewModel.getCategory(model.ACategory));
-            if (model.SearchText != null && model.SearchText != "")
-                filter = FilterByText(filter, model.SearchText);
-            filter = FilterByPrice(filter, model.MinPrice, model.MaxPrice);
-            if (model.State != "All")
-                filter = FilterByState(filter, model.State);
-            return View("Auctions", new AuctionsViewModel
-            {
-                Auctions = filter,
-                MinPrice = model.MinPrice,
-                MaxPrice = model.MaxPrice,
-                SearchText = model.SearchText,
-            });
-        }
+
         [HttpGet]
         public IActionResult Details(int? id)
         {
             var auction = context.Auctions.FirstOrDefault(e => e.Id.Equals(id));
+
+            if (auction == null)
+            {
+                return View("NotFound");
+            }
+
             return View(ToAuctionViewModel(auction));
         }
 
@@ -145,64 +183,6 @@ namespace CompraVenta.Controllers
                 ImageFilePath = auction.ImageFilePath,
                 SellerUserName = auction.SellerUserName
             };
-        }
-        private List<AuctionViewModel> ToAuctionViewModel(IEnumerable<Auction> list)
-        {
-            List<AuctionViewModel> ret = new List<AuctionViewModel>();
-            foreach (var auction in list)
-            {
-                ret.Add(new AuctionViewModel
-                {
-                    CurrentPrice = auction.CurrentPrice,
-                    CurrentOwner = auction.CurrentOwner,
-                    Id = auction.Id,
-                    Title = auction.Title,
-                    ACategory = auction.ACategory.ToString(),
-                    StartPrice = auction.StartPrice,
-                    Details = auction.Details,
-                    AName = auction.AName,
-                    Begin = auction.Begin,
-                    End = auction.End,
-                    SellerUserName = auction.SellerUserName
-                });
-            }
-            return ret;
-        }
-
-        public IEnumerable<AuctionViewModel> FilterByCategory(IEnumerable<AuctionViewModel> auctions, ArticleCategory category)
-        {
-            var ret = auctions.Where(e => e.getCategory() == category);
-            return ret;
-        }
-        public IEnumerable<AuctionViewModel> FilterByText(IEnumerable<AuctionViewModel> auctions, string SearchText)
-        {
-            return auctions.Where(e =>
-                e.Details.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
-                e.ACategory.ToString().Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
-                e.AName.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
-                e.SellerUserName.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
-                e.Title.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
-            );
-        }
-        public IEnumerable<AuctionViewModel> FilterByPrice(IEnumerable<AuctionViewModel> auctions, double MinPrice, double MaxPrice)
-        {
-            return auctions.Where(e =>
-                e.CurrentPrice >= MinPrice && e.CurrentPrice <= MaxPrice
-            );
-        }
-
-        public IEnumerable<AuctionViewModel> FilterByState(IEnumerable<AuctionViewModel> auctions, string State)
-        {
-            if (State == "All") return auctions;
-
-            return auctions.Where(e =>
-            {
-                string state = "Running";
-                TimeSpan r = e.End.Subtract(DateTime.Now);
-                if (e.Begin.CompareTo(DateTime.Now) == 1) state = "Coming";
-                else if (e.End.CompareTo(DateTime.Now) == -1) state = "Closed";
-                return state == State;
-            });
-        }
+        }        
     }
 }

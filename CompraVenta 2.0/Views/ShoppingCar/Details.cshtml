@@ -30,10 +30,10 @@
                     {
                         <div class="card mb4 my-4">
                             <div class="card-body">
-                                <h2 class="card-title">@article.Name</h2>
+                                <h2 class="card-title"><a asp-action="AnnouncementDetails" asp-controller="Announcement" asp-route-id="@article.Id">@article.Name</a></h2>
                                 <hr />
                                 <h6 class="card-title my-4">Precio: @article.Price</h6>
-
+                                
                                 <h5 class="card-subtitle">Vendedor: <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@article.SellerUserName">@article.SellerUserName</a></h5>
                             </div>
 
@@ -50,9 +50,12 @@
 
         <div class="container">
             <div class="row">
-                <div class="col-md-8 blog-entries">
-                    <a class="btn btn-success" asp-action="BuyAll" asp-controller="ShoppingCar">Comprar todo</a>
-                </div>
+                @if (Model.Articles.Count() > 0)
+                {
+                    <div class="col-md-8 blog-entries">
+                        <a class="btn btn-success" asp-action="BuyAll" asp-controller="ShoppingCar">Comprar todo</a>
+                    </div>
+                }
             </div>
         </div>
     </div>

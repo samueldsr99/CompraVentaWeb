@@ -77,12 +77,52 @@
                             </div>
                         </div>
                     }
+
+                    <div class="pagination_bar_arrow">
+                        <!-- Pagination -->
+                        <ul class="pagination justify-content-center mb-4">
+                            <li class="page-item">
+                                @{
+                                    int prev = Model.Page - 1;
+                                    int next = Model.Page + 1;
+                                }
+                                @if (Model.Page <= 1)
+                                {
+                                    <a class="page-link disabled">&larr; Older</a>
+                                }
+                                else
+                                {
+                                    <a class="page-link" asp-action="Announcements" asp-controller="Announcement"
+                                       asp-route-page="@prev"
+                                       asp-route-text="@Model.SearchText"
+                                       asp-route-minPrice="@Model.MinPrice"
+                                       asp-route-maxPrice="@Model.MaxPrice"
+                                       asp-route-category="@Model.ACategory">&larr; Older</a>
+                                }
+                            </li>
+                            <li class="page-item">
+                                @if (Model.Page >= Model.TotalPages)
+                                {
+                                    <a class="page-link disabled">Newer &rarr;</a>
+                                }
+                                else
+                                {
+                                    <a class="page-link" asp-action="Announcements" asp-controller="Announcement"
+                                       asp-route-page="@next"
+                                       asp-route-text="@Model.SearchText"
+                                       asp-route-minPrice="@Model.MinPrice"
+                                       asp-route-maxPrice="@Model.MaxPrice"
+                                       asp-route-category="@Model.ACategory">&larr; Older</a>
+                                }
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 <!-- Sidebar Widgets Column -->
                 <div class="col-md-4 blog-right-side">
 
-                    <form method="post" asp-action="Filter" asp-controller="Auction" class="card mb-4">
+                    <form method="get" asp-action="Auctions" asp-controller="Auction" class="card mb-4">
                         <h5 class="card-header">Buscar:</h5>
                         <div class="card-body">
                             <div class="input-group">
@@ -97,6 +137,7 @@
                                 <option class="custom-select-lg" value="Electronico">Electrónico</option>
                                 <option class="custom-select-lg" value="Vivienda">Vivienda</option>
                                 <option class="custom-select-lg" value="Autos">Autos</option>
+                                <option class="custom-select-lg" value="Vestuario">Vestuario</option>
                             </select>
                         </div>
 
@@ -111,7 +152,7 @@
                         </div>
 
                         <div class="card my-4">
-                            <h5 class="card-header">Rango de Precios:</h5>
+                            <h5 class="card-header">Precio actual:</h5>
                             <div class="card-body">
                                 <div class="row my-2">
                                     <h3 class="col-lg-4">Max:</h3>

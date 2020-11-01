@@ -178,58 +178,5 @@ namespace CompraVenta.Controllers
             context.SaveChanges();
             return RedirectToAction("AnnouncementDetails", model.Id);
         }
-
-        /**************************< Utility Functions >****************************************/
-
-        public List<AnnounceViewModel> ToAnnounceViewModel(IEnumerable<Announcement> list)
-        {
-            List<AnnounceViewModel> ret = new List<AnnounceViewModel>();
-            foreach (var announce in list)
-            {
-                var article = context.Articles.FirstOrDefault(e => e.Id.Equals(announce.ArticleId));
-
-                var obj = new AnnounceViewModel
-                {
-                    Id = announce.Id,
-                    Title = announce.Title,
-                    Date = announce.Date,
-                    Name = article.Name,
-                    SellerUserName = article.SellerUserName,
-                    Category = article.Category.ToString(),
-                    Description = article.Description,
-                    Price = article.Price
-                };
-                obj.SellerId = context.Users.FirstOrDefault(e => e.UserName.Equals(obj.SellerUserName)).Id;
-                ret.Add(obj);
-            }
-            return ret;
-        }
-
-        public IEnumerable<AnnounceViewModel> FilterByCategory(IEnumerable<AnnounceViewModel> announcements, ArticleCategory category)
-        {
-            var ret = announcements.Where(e => e.getCategory() == category);
-            return ret;
-        }
-        public IEnumerable<AnnounceViewModel> FilterByText(IEnumerable<AnnounceViewModel> announcements, string SearchText)
-        {
-            return announcements.Where(e => 
-                e.Description.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
-                e.Category.ToString().Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
-                e.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
-                e.SellerUserName.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase) ||
-                e.Title.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
-            );
-        }
-        public IEnumerable<AnnounceViewModel> FilterByPrice(IEnumerable<AnnounceViewModel> announcements, double MinPrice, double MaxPrice)
-        {
-            return announcements.Where(e => 
-                e.Price >= MinPrice && e.Price <= MaxPrice
-            );
-        }
-
-        public List<Announcement> SortBy()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
