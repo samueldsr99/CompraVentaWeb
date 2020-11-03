@@ -42,5 +42,7 @@ namespace CompraVenta.ViewModels
         public IFormFile ProfileImage { get; set; }
 
         public string ProfileImagePath { get; set; }
+
+        public string OldImagePath { get; set; }
     }
 }

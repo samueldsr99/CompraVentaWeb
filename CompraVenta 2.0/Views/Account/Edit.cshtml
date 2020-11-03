@@ -19,19 +19,18 @@
                             <div asp-validation-summary="All" class="text-danger"></div>
 
                             <input type="hidden" asp-for="ProfileImagePath" value="@Model.ProfileImagePath" />
-
-                            <div class="input-group">
-                                <span class="form-group">
-                                    <label asp-for="ProfileImage" value="@Model.ProfileImage"><strong style="margin-bottom: 0">Inserte una imagen</strong></label>
-                                    <input type="file" class="" asp-for="ProfileImage" value="@Model.ProfileImage" style="margin-top: 0" />
-                                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
-                                </span>
-                            </div>
+                            <input type="hidden" asp-for="OldImagePath" value="@Model.OldImagePath" />
 
                             <div class="control-group form-group">
                                 <div class="controls">
                                     <input type="tel" asp-for="UserName" value="@Model.UserName" class="form-control" disabled>
                                     <span asp-validation-for="UserName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="control-group form-group">
+                                <div class="custom-file">
+                                    <input type="file" class="form-control custom-file-input" asp-for="ProfileImage" value="@Model.ProfileImage" style="margin-top: 0" />
+                                    <label class="custom-file-label">Inserte una imagen</label>
                                 </div>
                             </div>
                             <div class="control-group form-group">
@@ -42,7 +41,7 @@
                             </div>
                             <div class="control-group form-group">
                                 <div class="controls">
-                                    <input type="tel" asp-for="PhoneNumber" placeholder="Número de Teléfono" class="form-control" value="@Model.PhoneNumber" id="phone" required data-validation-required-message="Especifique el número de teléfono.">
+                                    <input type="tel" asp-for="PhoneNumber" placeholder="Número de Teléfono" class="form-control" value="@Model.PhoneNumber" id="phone">
                                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
@@ -99,4 +98,12 @@
             <!-- /.container -->
         </div>
     </div>
+    <script>
+        $(document).ready(function () {
+            $('.custom-file-input').on("change", function () {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).next('.custom-file-label').html(fileName);
+            });
+        });
+    </script>
 </body>

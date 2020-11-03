@@ -115,6 +115,24 @@ namespace CompraVenta.Models
                     Description = "Ropita para tu bebé.",
                     Price = 20,
                     SellerUserName = "magalis"
+                },
+                new Article
+                {
+                    Name = "Zapatos de Michael Jackson",
+                    Category = ArticleCategory.Vestuario,
+                    SellerUserName = "markzuckerberg",
+                },
+                new Article
+                {
+                    Name = "Jarrón de oro",
+                    Category = ArticleCategory.Hogar,
+                    SellerUserName = "samueldsr"
+                },
+                new Article
+                {
+                    Name = "Cuadro original de Picasso",
+                    Category = ArticleCategory.Hogar,
+                    SellerUserName = "everdesia"
                 }
             };
 
@@ -217,9 +235,8 @@ namespace CompraVenta.Models
             {
                 new Auction
                 {
+                    ArticleId = 12,
                     Title = "Subasta: Zapatos orisha de Michael Jackson",
-                    AName = "Zapatos de Michael Jackson",
-                    ACategory = ArticleCategory.Vestuario,
                     StartPrice = 7000,
                     CurrentPrice = 7000,
                     Details = "Los zapatos orishas de Michael Jackson, para que hagas el Moon Walk por las noches en la disco.",
@@ -229,9 +246,8 @@ namespace CompraVenta.Models
                 },
                 new Auction
                 {
+                    ArticleId = 13,
                     Title = "*** Un jarrón de oro chino original ***",
-                    AName = "Jarrón de oro",
-                    ACategory = ArticleCategory.Hogar,
                     StartPrice = 1000,
                     Details = "Un jarrón de oro perteneciente a la dinastía Howasda de China",
                     SellerUserName = "masin",
@@ -242,9 +258,8 @@ namespace CompraVenta.Models
                 },
                 new Auction
                 {
+                    ArticleId = 14,
                     Title = "Subasta: Cuadro de Picasso caballero para tu pared",
-                    AName = "Cuadro original de Picasso",
-                    ACategory = ArticleCategory.Vivienda,
                     StartPrice = 60000,
                     CurrentPrice = 60000,
                     Details = "Cuadro de Picasso original: El entierro de Casagemas",
@@ -256,7 +271,7 @@ namespace CompraVenta.Models
 
             foreach (var auction in auctions)
             {
-                if (context.Auctions.Where(e => e.AName.Equals(auction.AName) && e.Details.Equals(auction.Details)).Count() == 0)
+                if (context.Auctions.Where(e => e.ArticleId.Equals(auction.ArticleId)).Count() == 0)
                 {
                     context.Auctions.Add(auction);
                 }

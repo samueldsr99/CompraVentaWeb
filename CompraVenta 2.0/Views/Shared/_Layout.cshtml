@@ -67,7 +67,7 @@
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <li class="nav-item dropdown">
-                            <a class="btn btn-dark" href="#" id="navbarDropdownBlog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@User.Identity.Name<i class="fas fa-sort-down"></i></a>
+                            <a class="nav-link btn btn-outline-dark" href="#" id="navbarDropdownBlog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@User.Identity.Name<i class="fas fa-sort-down"></i></a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownBlog">
                                 <a class="dropdown-item" asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@User.Identity.Name">Perfil</a>
                                 <a class="dropdown-item" asp-action="Details" asp-controller="ShoppingCar" asp-route-username="@User.Identity.Name">Carro de Compras</a>
@@ -89,18 +89,18 @@
         </div>
     </nav>
     <div>
+        <!-- Bootstrap core JavaScript -->
+        <script src="~/vendor/jquery/jquery.min.js"></script>
+        <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/imagesloaded.pkgd.min.js"></script>
+        <script src="~/js/isotope.pkgd.min.js"></script>
+        <script src="~/js/filter.js"></script>
+        <script src="~/js/jquery.appear.js"></script>
+        <script src="~/js/owl.carousel.min.js"></script>
+        <script src="~/js/jquery.fancybox.min.js"></script>
+        <script src="~/js/script.js"></script>
+
         @RenderBody()
     </div>
-
-    <!-- Bootstrap core JavaScript -->
-    <script src="~/vendor/jquery/jquery.min.js"></script>
-    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/imagesloaded.pkgd.min.js"></script>
-    <script src="~/js/isotope.pkgd.min.js"></script>
-    <script src="~/js/filter.js"></script>
-    <script src="~/js/jquery.appear.js"></script>
-    <script src="~/js/owl.carousel.min.js"></script>
-    <script src="~/js/jquery.fancybox.min.js"></script>
-    <script src="~/js/script.js"></script>
 </body>
 </html>

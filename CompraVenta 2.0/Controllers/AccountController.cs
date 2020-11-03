@@ -18,14 +18,17 @@ namespace CompraVenta.Controllers
         private readonly UserManager<Account> userManager;
         private readonly SignInManager<Account> signInManager;
         private readonly AppDbContext context;
+        private readonly IHostingEnvironment hostingEnvironment;
 
         public AccountController(UserManager<Account> userManager,
                                 SignInManager<Account> signInManager,
+                                IHostingEnvironment hostingEnvironment,
                                 AppDbContext context)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.context = context;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet]
@@ -154,7 +157,8 @@ namespace CompraVenta.Controllers
                 Email = account.Email,
                 Details = account.Description,
                 PhoneNumber = account.PhoneNumber,
-                ProfileImagePath = account.ProfileImagePath
+                ProfileImagePath = account.ProfileImagePath,
+                OldImagePath = account.ProfileImagePath
             };
             return View(model);
         }
@@ -164,7 +168,6 @@ namespace CompraVenta.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var account = await userManager.FindByNameAsync(model.UserName);
 
                 if (User.IsInRole("Admin") && model.Role != null)
@@ -182,11 +185,16 @@ namespace CompraVenta.Controllers
                 string uniqueFileName = null;
                 if (model.ProfileImage != null)
                 {
-                    string uploadsFolder = "./wwwroot/images/";
+                    if (model.OldImagePath != null)
+                    {
+                        string oldFilePath = Path.Combine(hostingEnvironment.WebRootPath, "images", model.OldImagePath);
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                    string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
                     uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                    using (var fs = new FileStream(filePath, FileMode.Create))
+                    using (FileStream fs = new FileStream(filePath, FileMode.Create))
                     {
                         model.ProfileImage.CopyTo(fs);
                     }
@@ -202,11 +210,8 @@ namespace CompraVenta.Controllers
                     || model.Confirmation != null)
                     {
                         var change_result = await userManager.ChangePasswordAsync(account, model.OldPassword, model.NewPassword);
-                        if (change_result.Succeeded)
-                        {
-                            return View(model);
-                        }
-                        else
+                        
+                        if (!change_result.Succeeded)
                         {
                             foreach (var error in change_result.Errors)
                             {
@@ -215,10 +220,7 @@ namespace CompraVenta.Controllers
                             return View(model);
                         }
                     }
-                    else
-                    {
-                        return View(model);
-                    }
+                    return RedirectToAction("AccountDetails", new { userName = User.Identity.Name });
                 }
                 else
                 {

@@ -49,14 +49,22 @@ namespace CompraVenta.Controllers
                     }
                 }
 
+                Article article = new Article
+                {
+                    Category = AuctionViewModel.getCategory(model.ACategory),
+                    Name = model.AName,
+                    SellerUserName = User.Identity.Name
+                };
+                context.Articles.Add(article);
+                context.SaveChanges();
+
                 var auction = new Auction
                 {
                     Title = model.Title,
-                    ACategory = AuctionViewModel.getCategory(model.ACategory),
+                    ArticleId = article.Id,
                     StartPrice = model.StartPrice,
                     CurrentPrice = model.StartPrice,
                     Details = model.Details,
-                    AName = model.AName,
                     Begin = model.Begin,
                     End = model.End,
                     SellerUserName = User.Identity.Name,
@@ -74,7 +82,20 @@ namespace CompraVenta.Controllers
         [HttpGet]
         public IActionResult Auctions(double? minPrice, double? maxPrice, string searchText="", string aCategory="All", string state="", int page=1)
         {
-            IQueryable<Auction> auctions = context.Auctions;
+            var auctions = from article in context.Articles
+                                           join auction in context.Auctions on article.Id equals auction.ArticleId
+                                           select new
+                                           {
+                                               auction.Id,
+                                               article.Name,
+                                               article.Category,
+                                               auction.Title,
+                                               auction.Details,
+                                               auction.SellerUserName,
+                                               auction.CurrentPrice,
+                                               auction.Begin,
+                                               auction.End
+                                           };
 
             if (minPrice != null)
             {
@@ -89,14 +110,14 @@ namespace CompraVenta.Controllers
                 auctions = auctions
                     .Where(e => e.Title.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
                           || e.Details.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
-                          || e.AName.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
-                          || e.ACategory.ToString().Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                          || e.Name.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+                          || e.Category.ToString().Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
                           || e.SellerUserName.ToString().Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
                     );
             }
             if (!string.IsNullOrEmpty(aCategory) && aCategory.ToLower() != "all")
             {
-                auctions = auctions.Where(e => AnnounceViewModel.getCategory(aCategory) == e.ACategory);
+                auctions = auctions.Where(e => AnnounceViewModel.getCategory(aCategory) == e.Category);
             }
             if (!string.IsNullOrEmpty(state) && state.ToLower() != "all")
             {
@@ -120,9 +141,25 @@ namespace CompraVenta.Controllers
 
             auctions = auctions.OrderByDescending(e => e.Begin).Skip(4 * (page - 1)).Take(4);
 
+            List<Auction> listAuctions = new List<Auction>();
+
+            foreach (var auction in auctions)
+            {
+                listAuctions.Add(new Auction
+                {
+                    Id = auction.Id,
+                    Title = auction.Title,
+                    Details = auction.Details,
+                    SellerUserName = auction.SellerUserName,
+                    CurrentPrice = auction.CurrentPrice,
+                    Begin = auction.Begin,
+                    End = auction.End
+                });
+            }
+
             return View(new AuctionsViewModel
             {
-                Auctions = auctions.ToList(),
+                Auctions = listAuctions,
                 Page = page,
                 SearchText = searchText,
                 MinPrice = minPrice,
@@ -164,20 +201,27 @@ namespace CompraVenta.Controllers
             return RedirectToAction("Details", model.Id);
         }
 
-        /**************************< Utility Functions >****************************************/
+        /**************************< Utilities >****************************************/
 
         private AuctionViewModel ToAuctionViewModel(Auction auction)
         {
+            var article = context.Articles.FirstOrDefault(e => e.Id.Equals(auction.ArticleId));
+
+            if (article == null)
+            {
+                return null;
+            }
+            
             return new AuctionViewModel
             {
                 CurrentPrice = auction.CurrentPrice,
                 CurrentOwner = auction.CurrentOwner,
                 Id = auction.Id,
                 Title = auction.Title,
-                ACategory = auction.ACategory.ToString(),
+                ACategory = article.Category.ToString(),
                 StartPrice = auction.StartPrice,
                 Details = auction.Details,
-                AName = auction.AName,
+                AName = article.Name,
                 Begin = auction.Begin,
                 End = auction.End,
                 ImageFilePath = auction.ImageFilePath,

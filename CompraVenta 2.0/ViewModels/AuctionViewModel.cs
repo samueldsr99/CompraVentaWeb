@@ -17,11 +17,15 @@ namespace CompraVenta.ViewModels
         }
 
         public int Id { get; set; }
+
         [Required]
         public string Title { get; set; }
         [Required]
+
         public string Details { get; set; }
+
         public string SellerUserName { get; set; }
+
         public string CurrentOwner { get; set; }
 
         [Required]
@@ -37,17 +41,21 @@ namespace CompraVenta.ViewModels
         [Required]
         [DataType(DataType.Duration)]
         public double StartPrice { get; set; }
-        public double CurrentPrice { get; set; }
-        public double BidAmount { get; set; }
-        [Required]
-        public string AName { get; set; }
-        public string ACategory { get; set; }
 
+        public double CurrentPrice { get; set; }
+
+        public double BidAmount { get; set; }
+        
+        public string AName { get; set; }
+
+        public string ACategory { get; set; }
+        
         public IFormFile ImageFile { get; set; }
 
         public string ImageFilePath { get; set; }
 
         public ArticleCategory getCategory() => AuctionViewModel.getCategory(ACategory);
+
         public static ArticleCategory getCategory(string s)
         {
             switch (s.ToLower())
