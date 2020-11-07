@@ -44,7 +44,7 @@
                     <h1 class="text-center">@Model.AName</h1>
                     <h3 class="text-left text-secondary">Categoría: @Model.ACategory.</h3>
                     <h5 class="text-center">por <a asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@Model.SellerUserName">@Model.SellerUserName</a></h5>
-                    
+
                     @if (Model.ImageFilePath != null)
                     {
                         <img class="img-fluid rounded" src="~/images/@Model.ImageFilePath" />
@@ -69,8 +69,8 @@
                     <h6 class="text-left">Precio de Salida: $@Model.StartPrice.</h6>
                     @if (state == 3)
                     {
-                        <h6 class="text-left">Precio de Cierre: $@Model.CurrentPrice.</h6>
-                        <h6 class="text-left">Ganador: <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@Model.CurrentOwner">@Model.CurrentOwner.</a></h6>
+                        <h6 class="text-left">Precio de Cierre: $@Model.CurrentPrice</h6>
+                        <h6 class="text-left">Ganador: <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@Model.CurrentOwner">@Model.CurrentOwner</a></h6>
                     }
                     @if (state == 2)
                     {
@@ -82,14 +82,26 @@
                     <h2 class="text-center">Detalles:</h2>
                     <h4 class="my-4 text-black-50 text-center my-4">@Model.Details</h4>
                     <hr />
-                    @if (SignInManager.IsSignedIn(User) && state == 2)
+                    @if (SignInManager.IsSignedIn(User))
                     {
-                        <form class="my-4" method="post" asp-action="Details" asp-controller="Auction">
-                            <input type="number" asp-for="BidAmount" />
-                            <button class="btn btn-primary right">Pujar</button>
-                        </form>
+                        if (state == 2)
+                        {
+                            <form class="my-4" method="post" asp-action="Details" asp-controller="Auction">
+                                <input type="number" asp-for="BidAmount" />
+                                <button class="btn btn-primary right">Pujar</button>
+                            </form>
+                            <button class="btn btn-warning">
+                                Cada puja que hagas es un contrato vinculante que te obliga
+                                a comprar el artículo si ganas.
+                            </button>
+                        }
+                        if (state == 3 && Model.CurrentOwner != null && Model.CurrentOwner.Equals(User.Identity.Name))
+                        {
+                            <a class="btn btn-success" asp-action="BuyProduct" asp-controller="Auction" asp-route-articleId="@Model.ArticleId" asp-route-username="@Model.CurrentOwner">Comprar</a>
+                            <button class="btn btn-warning">Debes comprar este producto en un plazo de 72 horas</button>
+                        }
                     }
-                    </div>
+                </div>
                 </div>
             </div>
             <!-- /.row -->

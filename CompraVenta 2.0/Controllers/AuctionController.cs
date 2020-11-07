@@ -11,7 +11,7 @@ using System.IO;
 
 namespace CompraVenta.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Client,Admin")]
     public class AuctionController : Controller
     {
         private readonly AppDbContext context;
@@ -94,7 +94,8 @@ namespace CompraVenta.Controllers
                                                auction.SellerUserName,
                                                auction.CurrentPrice,
                                                auction.Begin,
-                                               auction.End
+                                               auction.End,
+                                               auction.ArticleId
                                            };
 
             if (minPrice != null)
@@ -148,6 +149,7 @@ namespace CompraVenta.Controllers
                 listAuctions.Add(new Auction
                 {
                     Id = auction.Id,
+                    ArticleId = auction.ArticleId,
                     Title = auction.Title,
                     Details = auction.Details,
                     SellerUserName = auction.SellerUserName,
@@ -168,6 +170,19 @@ namespace CompraVenta.Controllers
                 State = state,
                 TotalPages = (int)Math.Ceiling((decimal)amount / 4)
             });
+        }
+
+        [HttpGet]
+        public IActionResult BuyProduct(int articleId, string username)
+        {
+            var auction = context.Auctions.FirstOrDefault(e => e.ArticleId.Equals(articleId));
+
+            if (auction == null || username != auction.CurrentOwner)
+            {
+                return View("NotFound");
+            }
+
+            return View();
         }
 
         [HttpGet]
@@ -214,6 +229,7 @@ namespace CompraVenta.Controllers
             
             return new AuctionViewModel
             {
+                ArticleId = article.Id,
                 CurrentPrice = auction.CurrentPrice,
                 CurrentOwner = auction.CurrentOwner,
                 Id = auction.Id,

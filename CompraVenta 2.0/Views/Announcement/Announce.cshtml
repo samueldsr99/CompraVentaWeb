@@ -29,12 +29,11 @@
 
                         <input type="hidden" asp-for="ImagePath" />
 
-                        <div class="input-group">
-                            <span class="form-group">
-                                <label asp-for="ImageFile"><strong style="margin-bottom: 0">Inserte una imagen</strong></label>
-                                <input type="file" class="" asp-for="ImageFile" style="margin-top: 0" />
-                                <span asp-validation-for="ImageFile" class="text-danger"></span>
-                            </span>
+                        <div class="control-group form-group">
+                            <div class="custom-file">
+                                <input type="file" class="form-control custom-file-input" asp-for="ImageFile" style="margin-top: 0" />
+                                <label class="custom-file-label">Inserte una imagen</label>
+                            </div>
                         </div>
 
                         <div class="control-group form-group">
@@ -80,3 +79,11 @@
         <!-- /.container -->
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $('.custom-file-input').on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).next('.custom-file-label').html(fileName);
+        });
+    });
+</script>

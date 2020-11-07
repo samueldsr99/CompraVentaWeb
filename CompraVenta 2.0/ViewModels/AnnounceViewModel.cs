@@ -48,6 +48,10 @@ namespace CompraVenta.ViewModels
 
         public string ImagePath { get; set; }
 
+        public bool Sold { get; set; }
+
+        public string Owner { get; set; }
+
         public ArticleCategory getCategory() => AnnounceViewModel.getCategory(Category);
 
         /******** Comment Form **************/

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace CompraVenta.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Client,Admin")]
     public class AccountController : Controller
     {
         private readonly UserManager<Account> userManager;
@@ -54,19 +54,18 @@ namespace CompraVenta.Controllers
                         Description = model.Details,
                     };
                     var result = await userManager.CreateAsync(user, model.Password);
+                    await userManager.AddToRoleAsync(user, "Client");
 
                     if (result.Succeeded)
                     {
-                        await signInManager.SignInAsync(user, isPersistent: false);
-
-                        await userManager.AddToRoleAsync(user, "Client");
+                        await signInManager.SignInAsync(user, isPersistent: true);
 
                         context.ShoppingCar.Add(new ShoppingCar
                         {
                             TotalPrice = 0,
                             UserName = model.UserName
                         });
-
+                        
                         context.SaveChanges();
 
                         return RedirectToAction("Index", "Home");
@@ -187,17 +186,10 @@ namespace CompraVenta.Controllers
                 {
                     if (model.OldImagePath != null)
                     {
-                        string oldFilePath = Path.Combine(hostingEnvironment.WebRootPath, "images", model.OldImagePath);
-                        System.IO.File.Delete(oldFilePath);
+                        Utils.FileProcess.DeleteFile(model.OldImagePath, hostingEnvironment);
                     }
-                    string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                    using (FileStream fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        model.ProfileImage.CopyTo(fs);
-                    }
+                    uniqueFileName = Utils.FileProcess.UploadFile(model.ProfileImage, hostingEnvironment);
                 }
                 account.ProfileImagePath = uniqueFileName;
 
@@ -233,10 +225,11 @@ namespace CompraVenta.Controllers
             return RedirectToAction("Edit", new { username = User.Identity.Name });
         }
 
-        [AcceptVerbs("Get, Post")]
-        public IActionResult AccessDenied(string returnUrl)
+        [HttpGet][HttpPost]
+        [AllowAnonymous]
+        public IActionResult AccessDenied(string ReturnUrl)
         {
-            ViewBag.returnUrl = returnUrl;
+            ViewBag.returnUrl = ReturnUrl;
             return View();
         }
     }

@@ -4,13 +4,14 @@
 @model AnnouncementsViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var title = string.IsNullOrEmpty(Model.Seller) ? "Anuncios" : "Anuncios de " + Model.Seller;
 }
 <div class="wrapper-main">
     <!-- full Title -->
     <div class="full-title">
         <div class="container">
             <!-- Page Heading/Breadcrumbs -->
-            <h1 class="mt-4 mb-3">Anuncios</h1>
+            <h1 class="mt-4 mb-3">@title</h1>
             <div class="breadcrumb-main">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
@@ -74,10 +75,11 @@
                                 {
                                     <a class="page-link" asp-action="Announcements" asp-controller="Announcement" 
                                        asp-route-page="@prev"
-                                       asp-route-text="@Model.SearchText"
+                                       asp-route-searchText="@Model.SearchText"
                                        asp-route-minPrice="@Model.MinPrice"
                                        asp-route-maxPrice="@Model.MaxPrice"
                                        asp-route-category="@Model.Category"
+                                       asp-route-seller="@Model.Seller"
                                     >&larr; Older</a>
                                 }
                             </li>
@@ -90,11 +92,12 @@
                                 {
                                     <a class="page-link" asp-action="Announcements" asp-controller="Announcement" 
                                        asp-route-page="@next"
-                                       asp-route-text="@Model.SearchText"
+                                       asp-route-searchText="@Model.SearchText"
                                        asp-route-minPrice="@Model.MinPrice"
                                        asp-route-maxPrice="@Model.MaxPrice"
                                        asp-route-category="@Model.Category"
-                                    >&larr; Older</a>
+                                       asp-route-seller="@Model.Seller"
+                                    >&rarr; Newer</a>
                                 }
                             </li>
                         </ul>
@@ -103,13 +106,18 @@
                 <!-- Sidebar Widgets Column -->
                 <div class="col-md-4 blog-right-side">
                     <!-- Search Widget -->
-                    <form method="get" asp-action="Announcements" asp-controller="Announcement" class="card mb-4">
+                    <form method="get" asp-action="Announcements" asp-controller="Announcement" class="card my-4">
                         <h5 class="card-header">Buscar:</h5>
-                        <div class="card-body">
-                            <div class="input-group">
-                                <input type="text" asp-for="SearchText" value="@Model.SearchText" class="form-control" placeholder="Texto...">
+                        <input type="text" hidden asp-for="Seller" />
+
+                        <div class="card my-4">
+                            <div class="card-body">
+                                <div class="input-group">
+                                    <input type="text" asp-for="SearchText" value="@Model.SearchText" class="form-control" placeholder="Texto...">
+                                </div>
                             </div>
                         </div>
+                        
                         <div class="card my-4">
                             <h5 class="card-header">Categorías:</h5>
                             <select class="control-group form-group-lg browser-default custom-select-lg" asp-for="Category">

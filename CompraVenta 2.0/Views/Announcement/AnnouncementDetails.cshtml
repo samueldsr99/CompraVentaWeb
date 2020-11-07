@@ -4,6 +4,7 @@
 @model AnnounceViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    string imageFile = Model.ImagePath ?? "user.png";
 }
 <div class="wrapper-main">
     <!-- full Title -->
@@ -26,18 +27,14 @@
                 <!-- Post Content Column -->
                 <div class="col-lg-8">
                     <!-- Title -->
-                    <h1 class="text-center">@Model.Title</h1>
+                    <h1 class="text-center"><strong>@Model.Title</strong></h1>
+                    <h2 class="text-center">@Model.Name</h2>
                     <h3 class="text-left text-secondary my-4">Categoría: @Model.Category.</h3>
                     <h5 class="text-center">por <a asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@Model.SellerUserName">@Model.SellerUserName</a></h5>
-                    <!-- Preview Image Not implemented yet! -->
-                    @if (string.IsNullOrEmpty(Model.ImagePath))
-                    {
-                        <img class="img-fluid rounded" src="~/images/user.png" alt="" width="50%" />
-                    }
-                    else
-                    {
-                        <img class="img-fluid rounded" src="~/images/@Model.ImagePath" alt="" width="50%" />
-                    }
+
+                    <div class="container text-center">
+                        <img class="img-fluid" src="~/images/@imageFile" alt="" width="70%" />
+                    </div>
 
                     <hr>
                     <!-- Date/Time -->
@@ -50,7 +47,11 @@
 
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        @if (Model.SellerUserName != User.Identity.Name)
+                        if (Model.Sold)
+                        {
+                            <button class="btn" style="background-color: lightgreen">Vendido a <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@Model.Owner">@Model.Owner</a></button>
+                        }
+                        else if (Model.SellerUserName != User.Identity.Name)
                         {
                             @if (!Model.InCar)
                             {
@@ -62,6 +63,12 @@
                             {
                                 <h5 class="btn btn-success">En el carrito</h5>
                             }
+                        }
+                        else
+                        {
+                            <form method="post" asp-action="Remove" asp-controller="Announcement" asp-route-id="@Model.Id" asp-route-articleId="@Model.ArticleId">
+                                <button class="btn btn-danger" type="submit">Eliminar</button>
+                            </form>
                         }
 
                         <div class="blog-right-side">

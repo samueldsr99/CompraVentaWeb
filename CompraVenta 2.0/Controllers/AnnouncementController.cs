@@ -1,6 +1,7 @@
 ﻿using CompraVenta.Models;
 using CompraVenta.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,17 +11,21 @@ using System.Threading.Tasks;
 
 namespace CompraVenta.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Client,Admin")]
     public class AnnouncementController : Controller
     {
         private readonly AppDbContext context;
-        public AnnouncementController(AppDbContext context)
+        private readonly IHostingEnvironment hostingEnvironment;
+
+        public AnnouncementController(AppDbContext context,
+                                        IHostingEnvironment hostingEnvironment)
         {
             this.context = context;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet]
-        public IActionResult Announcements(double? maxPrice, double? minPrice, string searchText = "", string category = "", int page = 1)
+        public IActionResult Announcements(double? maxPrice, double? minPrice, string searchText = "", string category = "", int page = 1, string seller = "")
         {
             var announcements = from announcement in context.Announcements
                                 join article in context.Articles on announcement.ArticleId equals article.Id
@@ -34,7 +39,9 @@ namespace CompraVenta.Controllers
                                     Name = article.Name,
                                     Category = article.Category.ToString(),
                                     Price = article.Price,
-                                    Description = article.Description
+                                    Description = article.Description,
+                                    Sold = article.Sold,
+                                    Owner = article.Owner,
                                 };
             // Filter by category
             if (!string.IsNullOrEmpty(category) && category.ToLower() != "all")
@@ -59,6 +66,10 @@ namespace CompraVenta.Controllers
                                                     || e.SellerUserName.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
                                                     );
             }
+            if (!string.IsNullOrEmpty(seller))
+            {
+                announcements = announcements.Where(e => e.SellerUserName.Equals(seller));
+            }
 
             int amount = announcements.Count();
 
@@ -73,6 +84,7 @@ namespace CompraVenta.Controllers
                 MaxPrice = maxPrice,
                 Category = category,
                 TotalPages = (int)Math.Ceiling((decimal)amount / 4),
+                Seller = seller
             });
         }
 
@@ -89,14 +101,7 @@ namespace CompraVenta.Controllers
                 string uniqueFileName = null;
                 if (model.ImageFile != null)
                 {
-                    string uploadsFolder = "./wwwroot/images/";
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ImageFile.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        model.ImageFile.CopyTo(fs);
-                    }
+                    uniqueFileName = Utils.FileProcess.UploadFile(model.ImageFile, hostingEnvironment);
                 }
 
                 var article = new Article
@@ -158,9 +163,29 @@ namespace CompraVenta.Controllers
                 Price = article_.Price,
                 Comments = comments.ToList(),
                 ImagePath = article_.ImageFilePath,
-                InCar = inCar
+                InCar = inCar,
+                Sold = article_.Sold,
+                Owner = article_.Owner
             };
             return View(obj);
+        }
+
+        [HttpPost]
+        public IActionResult Remove(int id, int articleId)
+        {
+            var announcement = context.Announcements.FirstOrDefault(e => e.Id.Equals(id));
+            var article = context.Articles.FirstOrDefault(e => e.Id.Equals(articleId));
+
+            if (announcement == null || article == null)
+            {
+                return RedirectToAction("NotFound");
+            }
+
+            context.Announcements.Remove(announcement);
+            context.Articles.Remove(article);
+            context.SaveChanges();
+
+            return RedirectToAction("Announcements");
         }
 
         [HttpPost]

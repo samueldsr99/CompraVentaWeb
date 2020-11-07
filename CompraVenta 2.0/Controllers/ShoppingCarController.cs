@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CompraVenta.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Client")]
     public class ShoppingCarController : Controller
     {
         private readonly UserManager<Account> userManager;
@@ -34,12 +34,12 @@ namespace CompraVenta.Controllers
                          join article in context.Articles on userArticle.ArticleId equals article.Id
                          select new
                          {
-                             Id = article.Id,
-                             Name = article.Name,
-                             Price = article.Price,
-                             Category = article.Category,
-                             UserName = userArticle.UserName,
-                             SellerUserName = article.SellerUserName
+                             article.Id,
+                             article.Name,
+                             article.Price,
+                             article.Category,
+                             userArticle.UserName,
+                             article.SellerUserName
                          };
             userArticles = userArticles.Where(e => e.UserName.Equals(username));
 
@@ -79,12 +79,12 @@ namespace CompraVenta.Controllers
                                join article in context.Articles on userArticle.ArticleId equals article.Id
                                select new
                                {
-                                   Id = article.Id,
-                                   Name = article.Name,
-                                   Price = article.Price,
-                                   Category = article.Category,
-                                   UserName = userArticle.UserName,
-                                   SellerUserName = article.SellerUserName
+                                   article.Id,
+                                   article.Name,
+                                   article.Price,
+                                   article.Category,
+                                   userArticle.UserName,
+                                   article.SellerUserName
                                };
             userArticles = userArticles.Where(e => e.UserName.Equals(username));
 
@@ -111,7 +111,7 @@ namespace CompraVenta.Controllers
 
             context.SaveChanges();
 
-            return RedirectToAction("Details", new { username = username });
+            return RedirectToAction("Details", new { username });
         }
 
         [HttpPost]
@@ -144,18 +144,33 @@ namespace CompraVenta.Controllers
         [HttpPost]
         public IActionResult BuyAll(string username)
         {
-            var userArticles = from userArticle in context.UserArticle
+            var query = from userArticle in context.UserArticle
                                join article in context.Articles on userArticle.ArticleId equals article.Id
                                select new
                                {
-                                   Id = article.Id,
-                                   Name = article.Name,
-                                   Price = article.Price,
-                                   Category = article.Category,
-                                   UserName = userArticle.UserName,
-                                   SellerUserName = article.SellerUserName
+                                   article.Id,
+                                   article.Name,
+                                   article.Price,
+                                   article.Category,
+                                   userArticle.UserName,
+                                   article.SellerUserName,
+                                   article.Sold,
+                                   article.Owner
                                };
-            userArticles = userArticles.Where(e => e.UserName.Equals(username));
+
+            query = query.Where(e => e.UserName.Equals(username));
+
+            List<int> Ids = new List<int>();
+
+            query.ToList().ForEach(e => Ids.Add(e.Id));
+
+            var articles = context.Articles.Where(e => Ids.Contains(e.Id));
+
+            foreach (var article in articles)
+            {
+                article.Sold = true;
+                article.Owner = username;
+            }
 
             var toRemove = context.UserArticle.Where(e => e.UserName.Equals(username));
 
@@ -166,7 +181,7 @@ namespace CompraVenta.Controllers
 
             context.SaveChanges();
 
-            return RedirectToAction("Details", new { username = username });
+            return RedirectToAction("Details", new { username });
         }
     }
 }

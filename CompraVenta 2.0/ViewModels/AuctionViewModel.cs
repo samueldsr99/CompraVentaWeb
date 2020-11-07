@@ -18,6 +18,8 @@ namespace CompraVenta.ViewModels
 
         public int Id { get; set; }
 
+        public int ArticleId { get; set; }
+
         [Required]
         public string Title { get; set; }
         [Required]

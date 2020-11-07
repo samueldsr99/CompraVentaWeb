@@ -107,9 +107,13 @@ namespace CompraVenta.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("Owner");
+
                     b.Property<double>("Price");
 
                     b.Property<string>("SellerUserName");
+
+                    b.Property<bool>("Sold");
 
                     b.HasKey("Id");
 

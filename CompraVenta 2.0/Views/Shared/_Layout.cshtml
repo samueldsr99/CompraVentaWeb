@@ -71,6 +71,7 @@
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownBlog">
                                 <a class="dropdown-item" asp-action="AccountDetails" asp-controller="Account" asp-route-userName="@User.Identity.Name">Perfil</a>
                                 <a class="dropdown-item" asp-action="Details" asp-controller="ShoppingCar" asp-route-username="@User.Identity.Name">Carro de Compras</a>
+                                <a class="dropdown-item" asp-action="Announcements" asp-controller="Announcement" asp-route-seller="@User.Identity.Name">Mis anuncios</a>
 
                                 <form method="post">
                                     <button type="submit" class="dropdown-item" asp-action="Logout" asp-controller="Account">Salir</button>
