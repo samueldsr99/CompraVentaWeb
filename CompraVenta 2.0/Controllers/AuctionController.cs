@@ -175,14 +175,27 @@ namespace CompraVenta.Controllers
         [HttpGet]
         public IActionResult BuyProduct(int articleId, string username)
         {
-            var auction = context.Auctions.FirstOrDefault(e => e.ArticleId.Equals(articleId));
+            return View(new BuyProductViewModel
+            {
+                ArticleId = articleId,
+                Username = username
+            });
+        }
 
-            if (auction == null || username != auction.CurrentOwner)
+        [HttpPost]
+        public IActionResult BuyProduct(BuyProductViewModel model)
+        {
+            var auction = context.Auctions.FirstOrDefault(e => e.ArticleId.Equals(model.ArticleId));
+
+            if (auction == null || model.Username != auction.CurrentOwner)
             {
                 return View("NotFound");
             }
 
-            return View();
+            auction.Sold = true;
+            context.SaveChanges();
+
+            return RedirectToAction("Auctions", "Auction");
         }
 
         [HttpGet]
@@ -241,7 +254,8 @@ namespace CompraVenta.Controllers
                 Begin = auction.Begin,
                 End = auction.End,
                 ImageFilePath = auction.ImageFilePath,
-                SellerUserName = auction.SellerUserName
+                SellerUserName = auction.SellerUserName,
+                Sold = auction.Sold
             };
         }        
     }

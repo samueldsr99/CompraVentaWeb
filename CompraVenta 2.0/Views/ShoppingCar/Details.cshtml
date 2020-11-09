@@ -22,16 +22,21 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8 blog-entries">
-                    <h4>Tienes @Model.Articles.Count  Artículo(s) en el carrito.</h4>
-                    <h5 class="my-4">Precio total @Model.TotalPrice .</h5>
+                    <h4>Tienes @Model.Articles.Count  Artículo(s) en el carrito</h4>
+                    <hr />
+                    <h5 class="my-4"><strong>Precio total: </strong> @Model.TotalPrice </h5>
                     <hr />
 
                     @foreach (var article in Model.Articles)
                     {
                         <div class="card mb4 my-4">
                             <div class="card-body">
+                                @if (article.Sold)
+                                {
+                                    <h5 class="btn-warning">No disponible</h5>
+                                }
                                 <h2 class="card-title"><a asp-action="AnnouncementDetails" asp-controller="Announcement" asp-route-id="@article.Id">@article.Name</a></h2>
-                                <hr />
+                                
                                 <h6 class="card-title my-4">Precio: @article.Price</h6>
                                 
                                 <h5 class="card-subtitle">Vendedor: <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@article.SellerUserName">@article.SellerUserName</a></h5>

@@ -8,9 +8,8 @@ namespace CompraVenta.ViewModels
 {
     public class ShoppingCarViewModel
     {
-        public int Id { get; set; }
         public string UserName { get; set; }
         public List<Article> Articles { get; set; }
-        public long TotalPrice { get; set; }
+        public double TotalPrice { get; set; }
     }
 }

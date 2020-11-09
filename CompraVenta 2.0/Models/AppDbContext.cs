@@ -14,8 +14,6 @@ namespace CompraVenta.Models
         {
         }
 
-        public DbSet<UserArticle> UserArticle { get; set; }
-
         public DbSet<ShoppingCar> ShoppingCar { get; set; }
 
         public new DbSet<Account> Users { get; set; }

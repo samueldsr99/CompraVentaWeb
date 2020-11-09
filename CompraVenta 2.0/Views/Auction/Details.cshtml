@@ -97,8 +97,15 @@
                         }
                         if (state == 3 && Model.CurrentOwner != null && Model.CurrentOwner.Equals(User.Identity.Name))
                         {
-                            <a class="btn btn-success" asp-action="BuyProduct" asp-controller="Auction" asp-route-articleId="@Model.ArticleId" asp-route-username="@Model.CurrentOwner">Comprar</a>
-                            <button class="btn btn-warning">Debes comprar este producto en un plazo de 72 horas</button>
+                            if (Model.Sold)
+                            {
+                                <h5 class="btn btn-success">Comprado</h5>
+                            }
+                            else
+                            {
+                                <a class="btn btn-success" asp-action="BuyProduct" asp-controller="Auction" asp-route-articleId="@Model.ArticleId" asp-route-username="@Model.CurrentOwner">Comprar</a>
+                                <button class="btn btn-warning">Debes comprar este producto en un plazo de 72 horas</button>
+                            }
                         }
                     }
                 </div>

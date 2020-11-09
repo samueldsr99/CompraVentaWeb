@@ -55,7 +55,7 @@ namespace CompraVenta_2._0
                                    .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             }).AddXmlSerializerFormatters();
-            services.AddScoped<IUserRepository, SQLUserRepository>();
+            // services.AddScoped<IUserRepository, SQLUserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +75,7 @@ namespace CompraVenta_2._0
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
+            // Seeding Data
             IdentitySeedDB.SeedDB(app.ApplicationServices);
             SeedDB.SeedData(app);
 

@@ -29,8 +29,7 @@ namespace CompraVenta.Controllers
         [HttpGet]
         public IActionResult Details(string username)
         {
-            var shoppingCar = context.ShoppingCar.FirstOrDefault(e => e.UserName.Equals(username));
-            var userArticles = from userArticle in context.UserArticle
+            var userArticles = from userArticle in context.ShoppingCar
                          join article in context.Articles on userArticle.ArticleId equals article.Id
                          select new
                          {
@@ -39,9 +38,12 @@ namespace CompraVenta.Controllers
                              article.Price,
                              article.Category,
                              userArticle.UserName,
-                             article.SellerUserName
+                             article.SellerUserName,
+                             article.Sold
                          };
             userArticles = userArticles.Where(e => e.UserName.Equals(username));
+
+            double totalPrice = userArticles.Sum(e => e.Sold ? 0 : e.Price);
 
             List<Article> articles = new List<Article>();
 
@@ -53,20 +55,15 @@ namespace CompraVenta.Controllers
                     Category = article.Category,
                     Name = article.Name,
                     Price = article.Price,
-                    SellerUserName = article.SellerUserName
+                    SellerUserName = article.SellerUserName,
+                    Sold = article.Sold
                 });
-            }
-
-            if (shoppingCar == null)
-            {
-                return View("NotFound");
             }
 
             return View(new ShoppingCarViewModel
             {
-                Id = shoppingCar.Id,
-                UserName = shoppingCar.UserName,
-                TotalPrice = shoppingCar.TotalPrice,
+                UserName = username,
+                TotalPrice = totalPrice,
                 Articles = articles
             });
         }
@@ -75,7 +72,7 @@ namespace CompraVenta.Controllers
         public IActionResult AddToCar(int articleId, string username)
         {
             // check if item is in car
-            var userArticles = from userArticle in context.UserArticle
+            var userArticles = from userArticle in context.ShoppingCar
                                join article in context.Articles on userArticle.ArticleId equals article.Id
                                select new
                                {
@@ -93,21 +90,23 @@ namespace CompraVenta.Controllers
                 return View("NotFound");
             }
 
-            var shoppingCar = context.ShoppingCar.FirstOrDefault(e => e.UserName.Equals(username));
             var article_ = context.Articles.FirstOrDefault(e => e.Id.Equals(articleId));
 
-            if (shoppingCar == null || article_ == null)
+            if (article_.Sold)
+            {
+                return RedirectToAction("Announcements", "Announcement");
+            }
+
+            if (article_ == null)
             {
                 return View("NotFound");
             }
 
-            context.UserArticle.Add(new UserArticle
+            context.ShoppingCar.Add(new ShoppingCar
             {
                 ArticleId = articleId,
                 UserName = username
             });
-
-            shoppingCar.TotalPrice += (long)article_.Price;
 
             context.SaveChanges();
 
@@ -118,21 +117,19 @@ namespace CompraVenta.Controllers
         public IActionResult RemoveFromCar(int? articleId)
         {
             string username = User.Identity.Name;
-            var result = context.UserArticle.FirstOrDefault(e => e.ArticleId.Equals(articleId) && e.UserName.Equals(username));
-            var shoppingCar = context.ShoppingCar.FirstOrDefault(e => e.UserName.Equals(username));
+            var result = context.ShoppingCar.FirstOrDefault(e => e.ArticleId.Equals(articleId) && e.UserName.Equals(username));
             var article = context.Articles.FirstOrDefault(e => e.Id.Equals(articleId));
 
-            if (articleId == null || result == null || shoppingCar == null)
+            if (articleId == null || result == null)
             {
                 return View("NotFound");
             }
 
-            context.UserArticle.Remove(result);
-            shoppingCar.TotalPrice -= (long)article.Price;
+            context.ShoppingCar.Remove(result);
 
             context.SaveChanges();
 
-            return RedirectToAction("Details", new { username = username });
+            return RedirectToAction("Details", new { username });
         }
 
         [HttpGet]
@@ -144,7 +141,7 @@ namespace CompraVenta.Controllers
         [HttpPost]
         public IActionResult BuyAll(string username)
         {
-            var query = from userArticle in context.UserArticle
+            var query = from userArticle in context.ShoppingCar
                                join article in context.Articles on userArticle.ArticleId equals article.Id
                                select new
                                {
@@ -158,7 +155,7 @@ namespace CompraVenta.Controllers
                                    article.Owner
                                };
 
-            query = query.Where(e => e.UserName.Equals(username));
+            query = query.Where(e => e.UserName.Equals(username) && !e.Sold);
 
             List<int> Ids = new List<int>();
 
@@ -172,12 +169,7 @@ namespace CompraVenta.Controllers
                 article.Owner = username;
             }
 
-            var toRemove = context.UserArticle.Where(e => e.UserName.Equals(username));
-
-            var shoppingCar = context.ShoppingCar.FirstOrDefault(e => e.UserName.Equals(username));
-            shoppingCar.TotalPrice = 0;
-
-            context.UserArticle.RemoveRange(toRemove);
+            context.ShoppingCar.RemoveRange(context.ShoppingCar.Where(e => e.UserName.Equals(username) && Ids.Contains(e.ArticleId)));
 
             context.SaveChanges();
 

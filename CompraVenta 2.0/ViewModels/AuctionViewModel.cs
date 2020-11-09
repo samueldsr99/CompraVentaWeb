@@ -56,6 +56,8 @@ namespace CompraVenta.ViewModels
 
         public string ImageFilePath { get; set; }
 
+        public bool Sold { get; set; }
+
         public ArticleCategory getCategory() => AuctionViewModel.getCategory(ACategory);
 
         public static ArticleCategory getCategory(string s)

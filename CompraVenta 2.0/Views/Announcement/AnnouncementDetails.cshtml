@@ -49,7 +49,7 @@
                     {
                         if (Model.Sold)
                         {
-                            <button class="btn" style="background-color: lightgreen">Vendido a <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@Model.Owner">@Model.Owner</a></button>
+                            <h5 class="btn-outline-warning">Vendido a <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@Model.Owner">@Model.Owner</a></h5>
                         }
                         else if (Model.SellerUserName != User.Identity.Name)
                         {
@@ -103,8 +103,6 @@
 
                 </div>
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container -->
     </div>
 </div>

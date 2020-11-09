@@ -53,6 +53,10 @@
                                 }
                                 <p class="card-text">@Summary</p>
                                 <h5 class="card-title">Precio: $@announce.Price</h5>
+                                @if (announce.Sold)
+                                {
+                                    <h5 class="btn-outline-warning">Vendido a <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@announce.Owner">@announce.Owner</a></h5>
+                                }
                                 <a asp-action="AnnouncementDetails" asp-route-id="@announce.Id" asp-controller="Announcement" class="btn btn-primary">
                                     Saber más &rarr;
                                 </a>
@@ -80,6 +84,7 @@
                                        asp-route-maxPrice="@Model.MaxPrice"
                                        asp-route-category="@Model.Category"
                                        asp-route-seller="@Model.Seller"
+                                       asp-route-state="@Model.State"
                                     >&larr; Older</a>
                                 }
                             </li>
@@ -97,6 +102,7 @@
                                        asp-route-maxPrice="@Model.MaxPrice"
                                        asp-route-category="@Model.Category"
                                        asp-route-seller="@Model.Seller"
+                                       asp-route-state="@Model.State"
                                     >&rarr; Newer</a>
                                 }
                             </li>
@@ -109,6 +115,7 @@
                     <form method="get" asp-action="Announcements" asp-controller="Announcement" class="card my-4">
                         <h5 class="card-header">Buscar:</h5>
                         <input type="text" hidden asp-for="Seller" />
+                        <input type="text" hidden asp-for="Page" value="1" />
 
                         <div class="card my-4">
                             <div class="card-body">
@@ -117,7 +124,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="card my-4">
                             <h5 class="card-header">Categorías:</h5>
                             <select class="control-group form-group-lg browser-default custom-select-lg" asp-for="Category">
@@ -129,6 +136,18 @@
                                 <option class="custom-select-lg" value="Vestuario">Vestuario</option>
                             </select>
                         </div>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="card my-4">
+                                <h5 class="card-header">Estado:</h5>
+                                <select class="control-group form-group-lg browser-default custom-select-lg" asp-for="State">
+                                    <option class="custom-select-lg" value="All">Todos</option>
+                                    <option class="custom-select-lg" value="Free">En venta</option>
+                                    <option class="custom-select-lg" value="Sold">Comprados</option>
+                                </select>
+                            </div>
+                        }
 
                         <div class="card my-4">
                             <h5 class="card-header">Rango de Precios:</h5>

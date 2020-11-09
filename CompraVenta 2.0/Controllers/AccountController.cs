@@ -59,12 +59,6 @@ namespace CompraVenta.Controllers
                     if (result.Succeeded)
                     {
                         await signInManager.SignInAsync(user, isPersistent: true);
-
-                        context.ShoppingCar.Add(new ShoppingCar
-                        {
-                            TotalPrice = 0,
-                            UserName = model.UserName
-                        });
                         
                         context.SaveChanges();
 
@@ -105,16 +99,6 @@ namespace CompraVenta.Controllers
 
                 if (result.Succeeded)
                 {
-                    if (context.ShoppingCar.FirstOrDefault(e => e.UserName.Equals(model.UserName)) == null)
-                    {
-                        context.ShoppingCar.Add(new ShoppingCar
-                        {
-                            UserName = model.UserName,
-                            TotalPrice = 0
-                        }); 
-                        context.SaveChanges();
-                    }
-
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
                         return LocalRedirect(returnUrl);

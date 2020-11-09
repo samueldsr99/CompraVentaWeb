@@ -12,7 +12,6 @@ namespace CompraVenta.Controllers
     [AllowAnonymous]
     public class HomeController : Controller
     {
-        private readonly IUserRepository _userRepository;
         public IActionResult Index() => View();
         public IActionResult Contact() => View();
         public IActionResult Services() => View();

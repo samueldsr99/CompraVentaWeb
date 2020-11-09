@@ -25,7 +25,7 @@ namespace CompraVenta.Controllers
         }
 
         [HttpGet]
-        public IActionResult Announcements(double? maxPrice, double? minPrice, string searchText = "", string category = "", int page = 1, string seller = "")
+        public IActionResult Announcements(double? maxPrice, double? minPrice, string searchText = "", string category = "", int page = 1, string seller = "", string state = "All")
         {
             var announcements = from announcement in context.Announcements
                                 join article in context.Articles on announcement.ArticleId equals article.Id
@@ -70,6 +70,22 @@ namespace CompraVenta.Controllers
             {
                 announcements = announcements.Where(e => e.SellerUserName.Equals(seller));
             }
+            if (!User.IsInRole("Admin"))
+            {
+                announcements = announcements.Where(e => !e.Sold);
+
+            }
+            else
+            {
+                if (state.ToLower() == "free")
+                {
+                    announcements = announcements.Where(e => !e.Sold);
+                }
+                else if (state.ToLower() == "sold")
+                {
+                    announcements = announcements.Where(e => e.Sold);
+                }
+            }
 
             int amount = announcements.Count();
 
@@ -84,7 +100,8 @@ namespace CompraVenta.Controllers
                 MaxPrice = maxPrice,
                 Category = category,
                 TotalPages = (int)Math.Ceiling((decimal)amount / 4),
-                Seller = seller
+                Seller = seller,
+                State = state
             });
         }
 
@@ -135,7 +152,7 @@ namespace CompraVenta.Controllers
             var article_ = context.Articles.FirstOrDefault(e => e.Id.Equals(announcement.ArticleId));
             var comments = context.Comments.Where(e => e.AnnouncementId.Equals(id)).OrderByDescending(e => e.PubDate);
 
-            var userArticles = from userArticle in context.UserArticle
+            var userArticles = from userArticle in context.ShoppingCar
                                join article in context.Articles on userArticle.ArticleId equals article.Id
                                select new
                                {

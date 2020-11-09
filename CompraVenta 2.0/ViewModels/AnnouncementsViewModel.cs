@@ -24,6 +24,7 @@ namespace CompraVenta.ViewModels
         public int Page { get; set; }
         public int TotalPages { get; set; }
         public string Seller { get; set; }
+        public string State { get; set; }
         public int FirstAnnounceOnPage() => (Page - 1) * 5;
         public int LastAnnounceOnPage() => FirstAnnounceOnPage() + 4;
     }

@@ -28,5 +28,7 @@ namespace CompraVenta.Models
         public string Details { get; set; }
 
         public string ImageFilePath { get; set; }
+
+        public bool Sold { get; set; }
     }
 }
