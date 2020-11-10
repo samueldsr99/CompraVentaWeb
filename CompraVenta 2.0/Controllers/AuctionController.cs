@@ -41,7 +41,6 @@ namespace CompraVenta.Controllers
                     return View(model);
                 }
 
-
                 string uniqueFileName = null;
                 if (model.ImageFile != null)
                 {
