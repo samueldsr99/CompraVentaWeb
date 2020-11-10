@@ -35,6 +35,12 @@ namespace CompraVenta.Controllers
                     ModelState.AddModelError("Fecha", "La fecha de inicio no puede ser mayor que la fecha de fin.");
                     return View(model);
                 }
+                if (model.End.Subtract(model.Begin) < new TimeSpan(0, 0, 10, 0))
+                {
+                    ModelState.AddModelError("Fecha", "La duración de la subasta debe ser mayor o igual a 10 minutos.");
+                    return View(model);
+                }
+
 
                 string uniqueFileName = null;
                 if (model.ImageFile != null)
@@ -53,7 +59,8 @@ namespace CompraVenta.Controllers
                 {
                     Category = AuctionViewModel.getCategory(model.ACategory),
                     Name = model.AName,
-                    SellerUserName = User.Identity.Name
+                    SellerUserName = User.Identity.Name,
+                    ImageFilePath = uniqueFileName
                 };
                 context.Articles.Add(article);
                 context.SaveChanges();
@@ -68,7 +75,6 @@ namespace CompraVenta.Controllers
                     Begin = model.Begin,
                     End = model.End,
                     SellerUserName = User.Identity.Name,
-                    ImageFilePath = uniqueFileName
                 };
 
                 context.Auctions.Add(auction);
@@ -186,13 +192,14 @@ namespace CompraVenta.Controllers
         public IActionResult BuyProduct(BuyProductViewModel model)
         {
             var auction = context.Auctions.FirstOrDefault(e => e.ArticleId.Equals(model.ArticleId));
+            var article = context.Articles.FirstOrDefault(e => e.Id.Equals(auction.ArticleId));
 
-            if (auction == null || model.Username != auction.CurrentOwner)
+            if (auction == null || model.Username != auction.CurrentOwner || article == null)
             {
                 return View("NotFound");
             }
 
-            auction.Sold = true;
+            article.Sold = true;
             context.SaveChanges();
 
             return RedirectToAction("Auctions", "Auction");
@@ -239,10 +246,11 @@ namespace CompraVenta.Controllers
             {
                 return null;
             }
-            
+
             return new AuctionViewModel
             {
                 ArticleId = article.Id,
+                ImageFilePath = article.ImageFilePath,
                 CurrentPrice = auction.CurrentPrice,
                 CurrentOwner = auction.CurrentOwner,
                 Id = auction.Id,
@@ -253,9 +261,8 @@ namespace CompraVenta.Controllers
                 AName = article.Name,
                 Begin = auction.Begin,
                 End = auction.End,
-                ImageFilePath = auction.ImageFilePath,
                 SellerUserName = auction.SellerUserName,
-                Sold = auction.Sold
+                Sold = article.Sold
             };
         }        
     }

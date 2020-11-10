@@ -85,7 +85,7 @@ namespace CompraVenta.Controllers
                                };
             userArticles = userArticles.Where(e => e.UserName.Equals(username));
 
-            if (userArticles.FirstOrDefault(e => e.Id.Equals(articleId)) != null)
+            if (userArticles.FirstOrDefault(e => e.Id.Equals(articleId)) != null || !User.Identity.Name.Equals(username))
             {
                 return View("NotFound");
             }

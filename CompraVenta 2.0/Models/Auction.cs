@@ -26,9 +26,5 @@ namespace CompraVenta.Models
         public DateTime End { get; set; }
 
         public string Details { get; set; }
-
-        public string ImageFilePath { get; set; }
-
-        public bool Sold { get; set; }
     }
 }
