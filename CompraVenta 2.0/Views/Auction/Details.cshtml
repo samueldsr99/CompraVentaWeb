@@ -74,7 +74,7 @@
                     }
                     @if (state == 2)
                     {
-                        <h3 class="text-left">Precio Actual: $@Model.CurrentPrice</h3>
+                        <h3 class="text-left">Precio Actual: <button class="btn btn-outline-success">$@Model.CurrentPrice</button> </h3>
                         <h3 class="text-left">Ganador Actual: <a asp-action="AccountDetails" asp-controller="Account" asp-route-username="@Model.CurrentOwner">@Model.CurrentOwner</a></h3>
                     }
                     <!-- Post Content -->

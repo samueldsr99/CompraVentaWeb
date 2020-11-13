@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CompraVenta.Controllers
 {
@@ -15,9 +16,13 @@ namespace CompraVenta.Controllers
     public class AuctionController : Controller
     {
         private readonly AppDbContext context;
-        public AuctionController(AppDbContext context)
+        private readonly IHostingEnvironment hostingEnvironment;
+
+        public AuctionController(AppDbContext context,
+                                IHostingEnvironment hostingEnvironment)
         {
             this.context = context;
+            this.hostingEnvironment = hostingEnvironment;
         }
         [HttpGet]
         public IActionResult Auction()
@@ -44,14 +49,7 @@ namespace CompraVenta.Controllers
                 string uniqueFileName = null;
                 if (model.ImageFile != null)
                 {
-                    string uploadsFolder = "./wwwroot/images/";
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ImageFile.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        model.ImageFile.CopyTo(fs);
-                    }
+                    uniqueFileName = Utils.FileProcess.UploadFile(model.ImageFile, hostingEnvironment);
                 }
 
                 Article article = new Article
@@ -64,7 +62,7 @@ namespace CompraVenta.Controllers
                 context.Articles.Add(article);
                 context.SaveChanges();
 
-                var auction = new Auction
+                Auction auction = new Auction
                 {
                     Title = model.Title,
                     ArticleId = article.Id,
@@ -75,7 +73,7 @@ namespace CompraVenta.Controllers
                     End = model.End,
                     SellerUserName = User.Identity.Name,
                 };
-
+                
                 context.Auctions.Add(auction);
                 context.SaveChanges();
 

@@ -133,14 +133,16 @@ namespace CompraVenta.Controllers
         }
 
         [HttpGet]
-        public IActionResult BuyAll()
-        {
-            return View();
-        }
+        public IActionResult BuyAll() => View();
 
         [HttpPost]
         public IActionResult BuyAll(string username)
         {
+            if (!username.Equals(User.Identity.Name))
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
             var query = from userArticle in context.ShoppingCar
                                join article in context.Articles on userArticle.ArticleId equals article.Id
                                select new
